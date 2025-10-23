@@ -10,7 +10,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ active, onSelect }) => {
   return (
-    <div className="bg-gray-800 text-white flex flex-col items-center p-6 w-max">
+    <div className="bg-green-900 text-white flex flex-col items-center p-6 w-max">
       <h1 className="text-xl font-bold text-center text-green-500 mb-12">WalletPay</h1>
       <ul className="flex flex-col justify-between h-full">
 		<div className="space-y-10">

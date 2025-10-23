@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useFlowCurrentUser } from "@onflow/react-sdk";
 
 type PaymentItem = {
   id: string;
@@ -14,8 +15,9 @@ const FLOW_GREEN = "#00b140";
 export default function PublicPaymentPage() {
   const [item, setItem] = useState<PaymentItem | null>(null);
   const [imageVisible, setImageVisible] = useState(true);
-  const [walletConnected, setWalletConnected] = useState(false);
   const [loadingPay, setLoadingPay] = useState(false);
+
+  const { user, authenticate, unauthenticate } = useFlowCurrentUser()
 
   useEffect(() => {
     // simulate fetch
@@ -27,7 +29,7 @@ export default function PublicPaymentPage() {
       amountFlow: 12.5,
       imageUrl:
         "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1200&auto=format&fit=crop",
-      feePercent: 0,
+      feePercent: 10,
     });
   }, []);
 
@@ -39,11 +41,11 @@ export default function PublicPaymentPage() {
 
   const connectWallet = async () => {
     // TODO: integrate FCL
-    setWalletConnected(true);
+    await authenticate();
   };
 
   const handlePay = async () => {
-    if (!walletConnected) {
+    if (!user?.loggedIn) {
       await connectWallet();
     }
     if (!item) return;
@@ -74,18 +76,11 @@ export default function PublicPaymentPage() {
             WalletPay • Checkout
           </h1>
 
-          <button
-            onClick={walletConnected ? undefined : connectWallet}
-            disabled={walletConnected}
-            className={`px-4 py-2 rounded-md font-medium border transition ${
-              walletConnected
-                ? "bg-gray-100 text-gray-600 border-gray-200 cursor-default"
-                : "text-white border-transparent"
-            }`}
-            style={{ backgroundColor: walletConnected ? undefined : FLOW_GREEN }}
-          >
-            {walletConnected ? "Wallet Connected" : "Connect Wallet"}
-          </button>
+			{user?.loggedIn ? (
+				<button className="bg-white border cursor-pointer border-green-500 font-bold text-green-500 px-4 py-2 rounded" onClick={unauthenticate}>{user?.addr}</button>
+			) : (
+				<button className="bg-green-500 cursor-pointer font-bold text-white px-4 py-2 rounded" onClick={authenticate}>Connect Wallet</button>
+			)}
         </header>
 
         {/* Content */}
@@ -123,7 +118,7 @@ export default function PublicPaymentPage() {
                   )}
                 </div>
 
-                <div className="rounded-lg border border-gray-200 divide-y divide-gray-200">
+                <div className="rounded-lg shadow-lg border border-gray-200 divide-y divide-gray-200">
                   <Row label="Price" value={`${item.amountFlow} FLOW`} />
                   <Row label="Charges" value={`${feeFlow} FLOW`} />
                   <Row
@@ -142,7 +137,7 @@ export default function PublicPaymentPage() {
                   <button
                     onClick={handlePay}
                     disabled={loadingPay}
-                    className={`w-full md:w-auto inline-flex items-center justify-center px-5 py-3 rounded-md text-white font-semibold transition disabled:opacity-60`}
+                    className={`w-full inline-flex items-center justify-center shadow-lg px-5 py-3 rounded-md text-white font-semibold transition disabled:opacity-60`}
                     style={{ backgroundColor: FLOW_GREEN }}
                   >
                     {loadingPay ? "Processing…" : "Pay"}

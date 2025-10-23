@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import Sidebar from "../components/Sidebar";
 import type { SidebarSection } from "../components/Sidebar";
 import { Payment } from "../components/Payment";
+import { useFlowCurrentUser } from "@onflow/react-sdk"
 
 const Dashboard: React.FC = () => {
   const [activeSection, setActiveSection] = useState<SidebarSection>("payment");
+
+  const { user, authenticate, unauthenticate } = useFlowCurrentUser()
 
   return (
     <div className="flex h-screen">
@@ -19,7 +22,11 @@ const Dashboard: React.FC = () => {
 							{activeSection.charAt(0).toUpperCase() + activeSection.slice(1)}
 						</h2>
 
-						<button className="bg-green-500 text-white px-4 py-2 rounded">Connect Wallet</button>
+						{user?.loggedIn ? (
+							<button className="bg-white border cursor-pointer border-green-500 font-bold text-green-500 px-4 py-2 rounded" onClick={unauthenticate}>{user?.addr}</button>
+						) : (
+							<button className="bg-green-500 cursor-pointer font-bold text-white px-4 py-2 rounded" onClick={authenticate}>Connect Wallet</button>
+						)}
 					</div>
 				</div>
 

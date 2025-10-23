@@ -13,7 +13,7 @@ const MAX_DESCRIPTION_LENGTH = 255;
 const MAX_SUCCESS_MESSAGE_LENGTH = 50;
 const MAX_NAME_LENGTH = 50;
 const MIN_SLUG_LENGTH = 5;
-const MAX_SLUG_LENGTH = 50;
+const MAX_SLUG_LENGTH = 20;
 const BASE_PAYMENT_PATH = "url/payment/";
 const INITIAL_CROP: PercentCrop = {
   unit: "%",
@@ -282,11 +282,11 @@ const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({ isOpen, onClose }) 
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      className="fixed h-screen inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-2xl rounded-xl bg-white p-6 shadow-xl"
+        className="w-full max-h-[90%] overflow-y-auto  max-w-2xl rounded-xl bg-white p-6 shadow-xl"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="mb-6 flex items-center justify-between">
