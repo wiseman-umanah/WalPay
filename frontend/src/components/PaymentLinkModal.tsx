@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FaTimes, FaSync } from "react-icons/fa";
 import ReactCrop, { convertToPixelCrop, type PixelCrop, type PercentCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
-import { countChars, generateSlugValue, sanitizeSlug, validateSlug } from "../utils";
+import { countChars, generateSlugValue, sanitizeSlug, validateSlug } from "../utils/utils";
 
 interface PaymentLinkModalProps {
   isOpen: boolean;
