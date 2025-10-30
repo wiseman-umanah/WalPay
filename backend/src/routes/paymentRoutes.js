@@ -9,7 +9,7 @@ import {
   findPaymentBySlug,
   setPaymentBlockchainTx,
 } from "../services/paymentService.js";
-import { recordTransaction } from "../services/transactionService.js";
+import { recordTransaction, listTransactionsForSeller } from "../services/transactionService.js";
 import { flowService } from "../services/flowService.js";
 
 registerRoute(
@@ -61,6 +61,31 @@ registerRoute(
     sendJson(res, 200, {
       items: payments.map(serializePayment),
       pagination: { limit, offset, count: payments.length },
+    });
+  },
+  { requireAuth: true }
+);
+
+registerRoute(
+  "GET",
+  "/transactions",
+  async ({ res, seller, query }) => {
+    if (!seller) throw new HttpError(401, "Unauthorized");
+    const limit = query.limit ? Math.min(Number(query.limit), 100) : 25;
+    const offset = query.offset ? Number(query.offset) : 0;
+    const transactions = await listTransactionsForSeller(seller._id, { limit, offset });
+    sendJson(res, 200, {
+      items: transactions.map((txn) => ({
+        id: txn._id?.toString(),
+        paymentId: txn.paymentId,
+        paymentName: txn.paymentName,
+        paymentSlug: txn.paymentSlug,
+        txId: txn.txId,
+        kind: txn.kind,
+        payerAddress: txn.payerAddress,
+        createdAt: txn.createdAt,
+      })),
+      pagination: { limit, offset, count: transactions.length },
     });
   },
   { requireAuth: true }
@@ -124,6 +149,8 @@ registerRoute(
       txId: String(body.txId),
       kind: String(body.kind),
       payerAddress: body.payerAddress ? String(body.payerAddress) : null,
+      paymentName: payment.name,
+      paymentSlug: payment.paymentLink,
     });
     if (body.kind === "payment") {
       await flowService.submitPaymentTx({ txId: body.txId, sellerAddress: seller.address });
@@ -147,6 +174,8 @@ registerRoute("POST", "/public/payments/:id/transactions", async ({ res, params,
     txId: String(body.txId),
     kind: String(body.kind),
     payerAddress: body.payerAddress ? String(body.payerAddress) : null,
+    paymentName: payment.name,
+    paymentSlug: payment.paymentLink,
   });
   sendJson(res, 201, { transaction: record });
 });

@@ -139,36 +139,21 @@ export default function ProfileSection({
           </div>
         ) : null}
         <form onSubmit={handlePasswordSubmit} className="mt-6 space-y-4">
-          <label className="block text-sm font-medium text-slate-200">
-            Current password
-            <input
-              type="password"
-              value={passwordForm.currentPassword}
-              onChange={(event) => setPasswordForm((prev) => ({ ...prev, currentPassword: event.target.value }))}
-              className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-emerald-400/60 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
-              required
-            />
-          </label>
-          <label className="block text-sm font-medium text-slate-200">
-            New password
-            <input
-              type="password"
-              value={passwordForm.newPassword}
-              onChange={(event) => setPasswordForm((prev) => ({ ...prev, newPassword: event.target.value }))}
-              className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-emerald-400/60 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
-              required
-            />
-          </label>
-          <label className="block text-sm font-medium text-slate-200">
-            Confirm new password
-            <input
-              type="password"
-              value={passwordForm.confirm}
-              onChange={(event) => setPasswordForm((prev) => ({ ...prev, confirm: event.target.value }))}
-              className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-emerald-400/60 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
-              required
-            />
-          </label>
+          <PasswordField
+            label="Current password"
+            value={passwordForm.currentPassword}
+            onChange={(event) => setPasswordForm((prev) => ({ ...prev, currentPassword: event.target.value }))}
+          />
+          <PasswordField
+            label="New password"
+            value={passwordForm.newPassword}
+            onChange={(event) => setPasswordForm((prev) => ({ ...prev, newPassword: event.target.value }))}
+          />
+          <PasswordField
+            label="Confirm new password"
+            value={passwordForm.confirm}
+            onChange={(event) => setPasswordForm((prev) => ({ ...prev, confirm: event.target.value }))}
+          />
           <button
             type="submit"
             className={`${brandGradient} w-full rounded-2xl px-4 py-3 text-sm font-semibold text-slate-950 shadow-lg transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60`}
@@ -179,5 +164,40 @@ export default function ProfileSection({
         </form>
       </article>
     </section>
+  );
+}
+
+type PasswordFieldProps = {
+  label: string;
+  value: string;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  required?: boolean;
+};
+
+function PasswordField({ label, value, onChange, required = true }: PasswordFieldProps) {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <label className="block text-sm font-medium text-slate-200">
+      {label}
+      <div className="relative mt-2">
+        <input
+          type={visible ? "text" : "password"}
+          value={value}
+          onChange={onChange}
+          className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 pr-12 text-sm text-white placeholder:text-slate-500 focus:border-emerald-400/60 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+          required={required}
+        />
+        <button
+          type="button"
+          onClick={() => setVisible((prev) => !prev)}
+          className="absolute inset-y-0 right-3 flex items-center text-xs font-semibold text-emerald-300 transition hover:text-emerald-100"
+          aria-label={visible ? "Hide password" : "Show password"}
+          aria-pressed={visible}
+        >
+          {visible ? "Hide" : "Show"}
+        </button>
+      </div>
+    </label>
   );
 }

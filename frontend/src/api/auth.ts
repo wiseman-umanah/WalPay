@@ -61,6 +61,7 @@ export async function resendOtp(email: string, purpose: "signup" | "login" | "re
 
 export async function login(email: string, password: string) {
   const { data } = await api.post<AuthSuccessResponse>("/auth/login", { email, password });
+  console.log(data)
   return data;
 }
 

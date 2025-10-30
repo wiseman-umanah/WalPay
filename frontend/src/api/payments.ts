@@ -42,8 +42,13 @@ export type PaymentListResponse = {
 };
 
 export async function listPayments(params: { limit?: number; offset?: number } = {}) {
-  const { data } = await api.get<PaymentListResponse>("/payments", { params });
-  return data;
+  try {
+    const { data } = await api.get<PaymentListResponse>("/payments", { params });
+    return data;
+  } catch (err) {
+    console.error("listPayments error:", err);
+    throw err;
+  }
 }
 
 export async function createPayment(payload: {

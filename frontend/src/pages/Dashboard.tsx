@@ -22,6 +22,20 @@ import { useNavigate } from "react-router-dom";
 import { PiCoinsDuotone, PiArrowBendUpRightDuotone, PiUsersThreeDuotone, PiListDuotone } from "react-icons/pi";
 
 const brandGradient = "bg-gradient-to-r from-emerald-400 via-emerald-500 to-sky-500";
+const FLOW_RATE_URL = "https://api.coinbase.com/v2/exchange-rates?currency=FLOW";
+const FLOW_RATE_TTL_MS = 5 * 60 * 1000;
+
+let cachedFlowUsdRate: { value: number; expires: number } | null = null;
+
+async function fetchFlowUsdRate(): Promise<number> {
+  const response = await fetch(FLOW_RATE_URL);
+  if (!response.ok) throw new Error(`Rate request failed: ${response.status}`);
+  const json = await response.json();
+  const usdString = json?.data?.rates?.USD;
+  const parsed = Number(usdString);
+  if (!usdString || Number.isNaN(parsed)) throw new Error("Invalid USD rate");
+  return parsed;
+}
 
 type StatCard = {
   title: string;
@@ -31,8 +45,10 @@ type StatCard = {
 };
 
 function buildStatCards(
-  summary: { count: number; totalFlow: number; totalUsd: number },
-  loadingFlow: boolean
+  summary: { count: number; totalFlow: number; totalUsd: number | null },
+  loadingFlow: boolean,
+  loadingRate: boolean,
+  rateError: string | null
 ): StatCard[] {
   return [
     {
@@ -49,8 +65,12 @@ function buildStatCards(
     },
     {
       title: "USD equivalent",
-      value: summary.totalUsd ? `$${summary.totalUsd.toFixed(2)}` : "—",
-      helper: "Based on configured FX",
+      value: loadingRate ? "…" : summary.totalUsd != null ? `$${summary.totalUsd.toFixed(2)}` : "—",
+      helper: rateError
+        ? rateError
+        : loadingRate
+          ? "Fetching Flow → USD rate"
+          : "Estimated using Coinbase rate",
       icon: PiUsersThreeDuotone,
     },
   ];
@@ -72,8 +92,20 @@ const Dashboard: React.FC = () => {
 
   const [chainEarnings, setChainEarnings] = useState<number | null>(null);
   const [loadingEarnings, setLoadingEarnings] = useState(false);
+  const [usdRate, setUsdRate] = useState<number | null>(() => {
+    const now = Date.now();
+    if (cachedFlowUsdRate && cachedFlowUsdRate.expires > now) {
+      return cachedFlowUsdRate.value;
+    }
+    return null;
+  });
+  const [loadingRates, setLoadingRates] = useState(() => {
+    const now = Date.now();
+    return !(cachedFlowUsdRate && cachedFlowUsdRate.expires > now);
+  });
+  const [rateError, setRateError] = useState<string | null>(null);
 
-  const { seller, updateProfile } = useAuth();
+  const { seller, updateProfile, tokens } = useAuth();
   const navigate = useNavigate();
 
   const { user, authenticate, unauthenticate } = useFlowCurrentUser();
@@ -81,6 +113,11 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     if (!seller) {
       navigate("/");
+      return;
+    }
+    // wait until we have an access token configured by the auth layer to avoid
+    // firing an unauthenticated request due to effect ordering
+    if (!tokens?.accessToken) {
       return;
     }
     const fetchPayments = async () => {
@@ -129,6 +166,40 @@ const Dashboard: React.FC = () => {
   }, [user?.addr]);
 
   useEffect(() => {
+    let cancelled = false;
+    const now = Date.now();
+    if (cachedFlowUsdRate && cachedFlowUsdRate.expires > now) {
+      setUsdRate(cachedFlowUsdRate.value);
+      setLoadingRates(false);
+      return;
+    }
+    const fetchRate = async () => {
+      setLoadingRates(true);
+      setRateError(null);
+      try {
+        const parsed = await fetchFlowUsdRate();
+        cachedFlowUsdRate = { value: parsed, expires: Date.now() + FLOW_RATE_TTL_MS };
+        if (!cancelled) {
+          setUsdRate(parsed);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setRateError("Unable to fetch Flow → USD rate");
+          setUsdRate(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadingRates(false);
+        }
+      }
+    };
+    void fetchRate();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
     if (activeSection !== "transactions" || transactionsFetched || !seller) return;
     const fetchTransactions = async () => {
       setLoadingTransactions(true);
@@ -147,17 +218,21 @@ const Dashboard: React.FC = () => {
   }, [activeSection, transactionsFetched, seller]);
 
   const statSummary = useMemo(() => {
-    const totalLinks = payments.length;
-    const totalUsd = payments.reduce((sum, payment) => sum + (Number(payment.priceUSD ?? 0) || 0), 0);
-    const onChain = chainEarnings ?? payments.reduce((sum, payment) => sum + (Number(payment.totalFlow) || 0), 0);
+    const activePayments = payments.filter((p) => p.status === "active");
+    const totalLinks = activePayments.length;
+    const onChain = chainEarnings ?? activePayments.reduce((sum, payment) => sum + (Number(payment.totalFlow) || 0), 0);
+    const usdEquivalent = usdRate != null ? onChain * usdRate : null;
     return {
       count: totalLinks,
       totalFlow: onChain,
-      totalUsd,
+      totalUsd: usdEquivalent,
     };
-  }, [payments, chainEarnings]);
+  }, [payments, chainEarnings, usdRate]);
 
-  const statCards = useMemo(() => buildStatCards(statSummary, loadingEarnings), [statSummary, loadingEarnings]);
+  const statCards = useMemo(
+    () => buildStatCards(statSummary, loadingEarnings, loadingRates, rateError),
+    [statSummary, loadingEarnings, loadingRates, rateError]
+  );
 
   const handleCreatePayment = async (payload: {
     name: string;
@@ -230,6 +305,8 @@ const Dashboard: React.FC = () => {
             loading={loadingPayments}
             walletConnected={Boolean(user?.loggedIn)}
             walletAddress={user?.addr ?? null}
+            flowToUsdRate={usdRate}
+            rateLoading={loadingRates}
             onRequireWallet={() => {
               setHighlightWallet(true);
               setTimeout(() => setHighlightWallet(false), 1500);

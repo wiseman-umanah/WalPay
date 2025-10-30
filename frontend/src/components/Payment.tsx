@@ -8,6 +8,8 @@ type PaymentProps = {
   loading: boolean;
   walletConnected: boolean;
   walletAddress?: string | null;
+  flowToUsdRate: number | null;
+  rateLoading: boolean;
   onRequireWallet: () => void;
   onCreatePayment: (payload: {
     name: string;
@@ -26,6 +28,8 @@ export function Payment({
   loading,
   walletConnected,
   walletAddress,
+  flowToUsdRate,
+  rateLoading,
   onRequireWallet,
   onCreatePayment,
   onDeletePayment,
@@ -92,6 +96,7 @@ export function Payment({
               <th className="px-6 py-4 text-left">Total Flow</th>
               <th className="px-6 py-4 text-left">Created</th>
               <th className="px-6 py-4 text-left">Actions</th>
+			<th className="px-6 py-4 text-left">Status</th>
             </tr>
           </thead>
           <tbody>
@@ -117,7 +122,15 @@ export function Payment({
                     </div>
                   </td>
                   <td className="px-6 py-5 text-white">{Number(link.priceFlow).toFixed(4)} FLOW</td>
-                  <td className="px-6 py-5">{link.priceUSD != null ? `$${Number(link.priceUSD).toFixed(2)}` : "—"}</td>
+                  <td className="px-6 py-5">
+                    {rateLoading
+                      ? "Loading…"
+                      : flowToUsdRate != null
+                        ? `$${(Number(link.priceFlow) * flowToUsdRate).toFixed(2)}`
+                        : link.priceUSD != null
+                          ? `$${Number(link.priceUSD).toFixed(2)}`
+                          : "—"}
+                  </td>
                   <td className="px-6 py-5 text-white">{Number(link.totalFlow).toFixed(4)} FLOW</td>
                   <td className="px-6 py-5 text-slate-400">
                     {new Date(link.createdAt).toLocaleString()}
@@ -148,6 +161,7 @@ export function Payment({
                       </button>
                     </div>
                   </td>
+                  <td className="px-6 py-5 text-white">{link.status}</td>
                 </tr>
               ))
             )}

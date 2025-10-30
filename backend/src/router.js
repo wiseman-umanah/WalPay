@@ -8,15 +8,36 @@ export function registerRoute(method, path, handler, options = {}) {
   const { requireAuth = false } = options;
   const { regex, keys } = compilePath(path);
   routes.push({ method: method.toUpperCase(), path, handler, regex, keys, requireAuth });
+  try {
+    logger.info && logger.info("registerRoute", { method: method.toUpperCase(), path, requireAuth });
+  } catch (e) {
+    /* ignore */
+  }
 }
 
 export async function handleRequest(req, res, context) {
   const { pathname, query } = parse(req.url, true);
+  try {
+    logger.debug && logger.debug("handleRequest: incoming", { method: req.method, pathname });
+  } catch (e) {
+    /* ignore */
+  }
   const route = routes.find((r) => r.method === req.method && r.regex.test(pathname));
 
   if (!route) {
+    try {
+      logger.info && logger.info("handleRequest: no matching route", { method: req.method, pathname });
+    } catch (e) {
+      /* ignore */
+    }
     sendJson(res, 404, { error: "Not Found" });
     return;
+  }
+
+  try {
+    logger.debug && logger.debug("handleRequest: matched route", { route: route.path, method: route.method });
+  } catch (e) {
+    /* ignore */
   }
 
   const matches = route.regex.exec(pathname);

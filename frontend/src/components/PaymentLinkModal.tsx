@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { FaTimes, FaSync } from "react-icons/fa";
 import ReactCrop, { convertToPixelCrop, type PixelCrop, type PercentCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
@@ -304,15 +305,17 @@ const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({ isOpen, onClose, on
     }
   };
 
-  if (!isOpen) return null;
+  const portalTarget = typeof document !== "undefined" ? document.body : null;
 
-  return (
+  if (!isOpen || !portalTarget) return null;
+
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex h-screen items-center justify-center bg-slate-950/70 backdrop-blur"
+      className="fixed inset-0 z-50 flex min-h-screen items-center justify-center bg-slate-950/50 px-4 py-8 backdrop-blur"
       onClick={onClose}
     >
       <div
-        className="w-full max-h-[90%] max-w-2xl overflow-y-auto rounded-[32px] border border-white/10 bg-white/5 p-6 shadow-[0_40px_110px_-60px_rgba(16,185,129,0.7)] backdrop-blur-xl sm:p-8"
+        className="w-full max-h-[90vh] max-w-2xl overflow-y-auto rounded-[32px] border border-white/10 bg-white/5 p-6 shadow-[0_40px_110px_-60px_rgba(16,185,129,0.7)] backdrop-blur-xl sm:p-8"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="mb-6 flex items-center justify-between">
@@ -516,7 +519,7 @@ const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({ isOpen, onClose, on
               Payment Link
             </label>
             <div className="mt-2 flex">
-              <span className="flex items-center rounded-l-2xl border border-r-0 border-white/10 bg-white/10 px-3 text-sm text-slate-300">
+              <span className="hidden sm:flex items-center rounded-l-2xl border border-r-0 border-white/10 bg-white/10 px-3 text-sm text-slate-300">
                 {BASE_PAYMENT_PATH}
               </span>
               <input
@@ -587,7 +590,8 @@ const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({ isOpen, onClose, on
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    portalTarget
   );
 };
 

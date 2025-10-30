@@ -1,4 +1,5 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
+import { loadAuth } from "../utils/authStorage";
 
 type Tokens = {
   accessToken: string | null;
@@ -17,9 +18,28 @@ export const api = axios.create({
   },
 });
 
-let tokens: Tokens = { accessToken: null, refreshToken: null };
+// Initialize in-memory tokens from localStorage to avoid request races
+const storedAuth = typeof window !== "undefined" ? loadAuth() : { seller: null, tokens: null };
+let tokens: Tokens = {
+  accessToken: storedAuth.tokens?.accessToken ?? null,
+  refreshToken: storedAuth.tokens?.refreshToken ?? null,
+};
+try {
+  // eslint-disable-next-line no-console
+  console.debug("api.client: initialized tokens from localStorage", {
+    hasAccess: !!tokens.accessToken,
+    hasRefresh: !!tokens.refreshToken,
+  });
+} catch (e) {
+  /* ignore */
+}
 let refreshHandler: RefreshHandler | null = null;
 let refreshingPromise: Promise<Tokens | null> | null = null;
+
+function isRefreshEndpoint(config?: InternalAxiosRequestConfig<any>) {
+  if (!config?.url) return false;
+  return config.url.includes("/auth/refresh");
+}
 
 export function configureAuth(initialTokens: Tokens, handler: RefreshHandler | null) {
   tokens = initialTokens;
@@ -35,9 +55,17 @@ export function clearTokens() {
 }
 
 api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  if (tokens.accessToken) {
+  if (tokens.accessToken && !isRefreshEndpoint(config)) {
     config.headers = config.headers ?? {};
     config.headers.Authorization = `Bearer ${tokens.accessToken}`;
+  }
+  // Debugging: log outgoing request url and whether Authorization header is present
+  try {
+    // avoid logging tokens directly in production; this is temporary debug info
+    // eslint-disable-next-line no-console
+    console.debug("api.request:", { url: config.url, hasAuth: !!config.headers?.Authorization });
+  } catch (e) {
+    /* ignore */
   }
   return config;
 });
@@ -48,7 +76,12 @@ api.interceptors.response.use(
     const status = error.response?.status;
     const originalConfig: any = error.config;
 
-    if (status === 401 && refreshHandler && !originalConfig?._retry) {
+    if (
+      status === 401 &&
+      refreshHandler &&
+      !originalConfig?._retry &&
+      !isRefreshEndpoint(originalConfig)
+    ) {
       if (!refreshingPromise) {
         refreshingPromise = refreshHandler().finally(() => {
           refreshingPromise = null;
@@ -64,6 +97,19 @@ api.interceptors.response.use(
         };
         return api.request(originalConfig);
       }
+    }
+
+    // Log 401 failures to help debug authorization issues
+    try {
+      // eslint-disable-next-line no-console
+      console.debug("api.response.error:", {
+        url: originalConfig?.url,
+        status,
+        tokensPresent: { access: !!tokens.accessToken, refresh: !!tokens.refreshToken },
+        _retry: originalConfig?._retry ?? false,
+      });
+    } catch (e) {
+      /* ignore */
     }
 
     return Promise.reject(error);

@@ -195,7 +195,9 @@ registerRoute(
 registerRoute("POST", "/auth/refresh", async ({ res, body }) => {
   requireFields(["refreshToken"], body);
   const refreshed = await refreshSession(String(body.refreshToken));
-  if (!refreshed) throw new HttpError(401, "Invalid refresh token");
+  if (!refreshed || !refreshed.session) {
+    throw new HttpError(401, "Invalid refresh token");
+  }
   sendJson(res, 200, {
     message: "Token refreshed",
     tokens: {
@@ -206,3 +208,6 @@ registerRoute("POST", "/auth/refresh", async ({ res, body }) => {
     },
   });
 });
+
+// Temporary debug endpoint: echoes request headers so client-side can verify what the
+// server actually receives. Safe for local development only.

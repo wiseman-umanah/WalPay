@@ -6,6 +6,8 @@ interface PaymentLinksSectionProps {
   loading: boolean;
   walletConnected: boolean;
   walletAddress?: string | null;
+  flowToUsdRate: number | null;
+  rateLoading: boolean;
   onRequireWallet: () => void;
   onCreatePayment: (payload: {
     name: string;
@@ -24,6 +26,8 @@ export default function PaymentLinksSection({
   loading,
   walletConnected,
   walletAddress,
+  flowToUsdRate,
+  rateLoading,
   onRequireWallet,
   onCreatePayment,
   onDeletePayment,
@@ -42,6 +46,8 @@ export default function PaymentLinksSection({
           loading={loading}
           walletConnected={walletConnected}
           walletAddress={walletAddress}
+          flowToUsdRate={flowToUsdRate}
+          rateLoading={rateLoading}
           onRequireWallet={onRequireWallet}
           onCreatePayment={onCreatePayment}
           onDeletePayment={onDeletePayment}

@@ -34,7 +34,11 @@ export class HttpError extends Error {
 
 export function parseBearerToken(headerValue) {
   if (!headerValue) return null;
-  const [scheme, token] = headerValue.split(" ");
+  // split on any whitespace to be tolerant of multiple spaces or tabs
+  const parts = String(headerValue).trim().split(/\s+/);
+  if (parts.length < 2) return null;
+  const scheme = parts[0];
+  const token = parts.slice(1).join(" ");
   if (!scheme || scheme.toLowerCase() !== "bearer" || !token) {
     return null;
   }
