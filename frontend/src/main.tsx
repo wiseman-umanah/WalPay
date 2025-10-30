@@ -20,7 +20,7 @@ createRoot(document.getElementById('root')!).render(
           discoveryWalletMethod: "IFRAME/RPC",
           discoveryAuthnEndpoint: "https://fcl-discovery.onflow.org/api/authn",
           discoveryAuthnInclude: ["0x7bcb95a415452d7d"],
-          appDetailTitle: "WalletPay",
+          appDetailTitle: "WalP",
           appDetailIcon: "https://example.com/icon.png",
           appDetailDescription: "A decentralized app on Flow",
           appDetailUrl: import.meta.env.VITE_APP_URL ?? window.location.origin,

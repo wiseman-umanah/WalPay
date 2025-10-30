@@ -1,6 +1,6 @@
 import type { AuthSuccessResponse, AuthTokens, SellerProfile } from "../api/auth";
 
-export const AUTH_STORAGE_KEY = "walpay.auth";
+export const AUTH_STORAGE_KEY = "walp.auth";
 
 export type StoredAuth = {
   seller: SellerProfile | null;
@@ -17,7 +17,7 @@ export function loadAuth(): StoredAuth {
     return {
       seller: parsed.seller ?? null,
       tokens: parsed.tokens ?? null,
-    };
+    };	
   } catch {
     return { seller: null, tokens: null };
   }
@@ -26,11 +26,7 @@ export function loadAuth(): StoredAuth {
 export function saveAuth(data: StoredAuth) {
   try {
     window.localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(data));
-    // temporary debug: indicate that auth was persisted
-    // eslint-disable-next-line no-console
-    console.debug("authStorage.saveAuth: saved auth", { hasTokens: !!data.tokens });
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.error("authStorage.saveAuth: failed to save auth", e);
   }
 }

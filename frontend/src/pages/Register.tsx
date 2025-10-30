@@ -41,7 +41,7 @@ const viewTitles: Record<View, string> = {
 };
 
 const viewDescriptions: Partial<Record<View, string>> = {
-  signup: "Tell us a bit about your business to generate your WalPay workspace.",
+  signup: "Tell us a bit about your business to generate your WalP workspace.",
   login: "Sign in to manage links, treasury flows, and analytics.",
   "verify-signup": "Enter the OTP sent to your email to activate your account.",
   "login-otp": "Use the one-time code we just delivered to you.",
@@ -328,7 +328,7 @@ export default function RegistrationForm() {
                 Use OTP instead
               </button>
             </div>
-            <SwitchText onClick={() => setView("signup")} text="New to WalPay?" action="Create an account" />
+            <SwitchText onClick={() => setView("signup")} text="New to WalP?" action="Create an account" />
           </form>
         );
       case "login-otp":
@@ -392,7 +392,7 @@ export default function RegistrationForm() {
       return `OTP delivered to ${form.loginEmail}.`;
     }
     if (view === "forgot-password") {
-      return "Enter the email tied to your WalPay account.";
+      return "Enter the email tied to your WalP account.";
     }
     return viewDescriptions[view] ?? "";
   };
@@ -401,13 +401,13 @@ export default function RegistrationForm() {
   const backTarget = backMap[view];
   const appUrl =
     import.meta.env.VITE_APP_URL ??
-    (typeof window !== "undefined" ? window.location.origin : "https://walpay.example");
+    (typeof window !== "undefined" ? window.location.origin : "https://walp.example");
   const structuredData = useMemo(
     () => [
       {
         "@context": "https://schema.org",
         "@type": "Organization",
-        name: "WalPay",
+        name: "WalP",
         url: appUrl,
         logo: `${appUrl.replace(/\/$/, "")}/logo.png`,
         sameAs: ["https://x.com/flow_blockchain"],
@@ -415,7 +415,7 @@ export default function RegistrationForm() {
       {
         "@context": "https://schema.org",
         "@type": "WebSite",
-        name: "WalPay",
+        name: "WalP",
         url: appUrl,
         potentialAction: {
           "@type": "SearchAction",
@@ -438,7 +438,7 @@ export default function RegistrationForm() {
           "crypto payments platform",
           "merchant dashboard",
           "Flow blockchain checkout",
-          "WalPay onboarding",
+          "WalP onboarding",
         ]}
       />
       <div className="relative min-h-screen overflow-hidden">
@@ -450,13 +450,13 @@ export default function RegistrationForm() {
         <section className="flex w-full flex-col justify-between gap-12 px-6 pb-20 pt-16 sm:px-10 lg:w-1/2 lg:px-14 lg:pb-24">
           <header className="space-y-6">
             <div className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-1 text-xs font-medium uppercase tracking-widest text-emerald-300">
-              WalPay for Flow
+              WalP for Flow
             </div>
             <h1 className="text-4xl font-semibold leading-tight text-white sm:text-5xl">
               Build a modern payments stack on Flow, without touching boilerplate code.
             </h1>
             <p className="max-w-xl text-base text-slate-300">
-              WalPay handles on-chain payment links, treasury routing, and merchant analytics so your team can focus on
+              WalP handles on-chain payment links, treasury routing, and merchant analytics so your team can focus on
               customer experience—not plumbing.
             </p>
           </header>
@@ -649,7 +649,7 @@ function PrimaryButton({ children, disabled }: PrimaryButtonProps) {
 function Terms() {
   return (
     <p className="text-xs text-slate-500">
-      By clicking "Create account" you agree to WalPay's{" "}
+      By clicking "Create account" you agree to WalP's{" "}
       <Link to="/terms" className="text-emerald-300 hover:text-emerald-200">
         terms of service
       </Link>{" "}

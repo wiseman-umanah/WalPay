@@ -44,7 +44,7 @@ export default function Sidebar({ active, onSelect, onClose, mobile = false }: S
         <div className="space-y-3">
           <div className="inline-flex items-center justify-between gap-3">
             <div className="inline-flex items-center rounded-full border border-emerald-400/40 bg-emerald-500/15 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-emerald-200">
-              WalPay
+              WalP
             </div>
             {mobile && onClose ? (
               <button
@@ -109,7 +109,7 @@ export default function Sidebar({ active, onSelect, onClose, mobile = false }: S
               </button>
 			<footer className="relative mt-10 rounded-2xl border border-white/10 bg-white/5 p-4 text-xs text-slate-400">
 				<p className="font-semibold text-white">Need help?</p>
-				<p className="mt-1">Read our Flow integration playbook or reach out to the WalPay team.</p>
+				<p className="mt-1">Read our Flow integration playbook or reach out to the WalP team.</p>
 			</footer>
 		</div>
 	  </div>

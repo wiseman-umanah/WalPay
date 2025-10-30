@@ -61,7 +61,7 @@ function buildStatCards(
     {
       title: "Total Flow earned",
       value: loadingFlow ? "—" : `${summary.totalFlow.toFixed(2)} FLOW`,
-      helper: loadingFlow ? "Fetching on-chain earnings" : "Reported directly from WalPay",
+      helper: loadingFlow ? "Fetching on-chain earnings" : "Reported directly from WalP",
       icon: PiArrowBendUpRightDuotone,
     },
     {
@@ -343,13 +343,13 @@ const Dashboard: React.FC = () => {
     <>
       <Seo
         title="Merchant dashboard"
-        description="Monitor Flow payment performance, sync wallet payouts, and configure WalPay automation from a single dashboard."
+        description="Monitor Flow payment performance, sync wallet payouts, and configure WalP automation from a single dashboard."
         noIndex
         keywords={[
           "Flow merchant dashboard",
           "payment analytics",
           "crypto payouts",
-          "WalPay console",
+          "WalP console",
           "Flow earnings tracker",
         ]}
       />
@@ -385,9 +385,9 @@ const Dashboard: React.FC = () => {
         <header className="px-4 pt-14 sm:px-8 lg:pt-12">
           <div className="flex flex-wrap items-center justify-between gap-6">
             <div className="space-y-2">
-              <p className="text-sm font-semibold uppercase tracking-widest text-emerald-300/80">WalPay Studio</p>
+              <p className="text-sm font-semibold uppercase tracking-widest text-emerald-300/80">WalP Studio</p>
               <h1 className="text-3xl font-semibold text-white sm:text-4xl">
-                {seller?.businessName ?? "WalPay merchant"}
+                {seller?.businessName ?? "WalP merchant"}
               </h1>
               <p className="text-sm text-slate-400">
                 Manage Flow payment links, payouts, and insights from a single dashboard.

@@ -13,7 +13,7 @@ config()
   .put("discovery.wallet", discoveryWallet)
   .put("discovery.authn.endpoint", discoveryEndpoint)
   .put("discovery.authn.include", discoveryInclude())
-  .put("app.detail.title", import.meta.env.VITE_APP_TITLE ?? "WalPay")
+  .put("app.detail.title", import.meta.env.VITE_APP_TITLE ?? "WalP")
   .put("app.detail.icon", import.meta.env.VITE_APP_ICON ?? "")
   .put("app.detail.url", appUrl);
 

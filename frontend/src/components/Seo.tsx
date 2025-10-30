@@ -12,15 +12,15 @@ type SeoProps = {
   keywords?: string[];
 };
 
-const DEFAULT_TITLE = "WalPay | Flow-native payment links for instant settlement";
+const DEFAULT_TITLE = "WalP | Flow-native payment links for instant settlement";
 const DEFAULT_DESCRIPTION =
-  "WalPay helps Flow merchants launch payment links in minutes, route platform fees automatically, and track earnings with a real-time dashboard.";
+  "WalP helps Flow merchants launch payment links in minutes, route platform fees automatically, and track earnings with a real-time dashboard.";
 const FALLBACK_IMAGE = "/logo.png";
 const DEFAULT_KEYWORDS = [
   "Flow blockchain payments",
   "payment links",
   "crypto checkout",
-  "WalPay platform",
+  "WalP platform",
   "FlowToken",
   "Cadence smart contract",
 ];
@@ -37,13 +37,13 @@ export function Seo({
   const isBrowser = typeof window !== "undefined";
   const baseUrl =
     import.meta.env.VITE_APP_URL ??
-    (isBrowser ? window.location.origin : "https://walpay.example");
+    (isBrowser ? window.location.origin : "https://walp.example");
   const currentPath = isBrowser ? window.location.pathname : "/";
   const canonicalUrl =
     canonical ??
     `${baseUrl.replace(/\/$/, "")}${currentPath}`;
 
-  const finalTitle = title ? `${title} | WalPay` : DEFAULT_TITLE;
+  const finalTitle = title ? `${title} | WalP` : DEFAULT_TITLE;
   const finalDescription = description ?? DEFAULT_DESCRIPTION;
   const ogImage = image ?? `${baseUrl.replace(/\/$/, "")}${FALLBACK_IMAGE}`;
   const resolvedKeywords = keywords?.length ? keywords.join(", ") : DEFAULT_KEYWORDS.join(", ");
@@ -54,19 +54,19 @@ export function Seo({
       <meta name="description" content={finalDescription} />
       <meta name="keywords" content={resolvedKeywords} />
       <meta name="theme-color" content="#0f172a" />
-      <meta name="application-name" content="WalPay" />
+      <meta name="application-name" content="WalP" />
       <meta property="og:type" content="website" />
       <meta property="og:title" content={finalTitle} />
       <meta property="og:description" content={finalDescription} />
       <meta property="og:url" content={canonicalUrl} />
-      <meta property="og:site_name" content="WalPay" />
+      <meta property="og:site_name" content="WalP" />
       <meta property="og:image" content={ogImage} />
-      <meta property="og:image:alt" content="WalPay logo" />
+      <meta property="og:image:alt" content="WalP logo" />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={finalTitle} />
       <meta name="twitter:description" content={finalDescription} />
       <meta name="twitter:image" content={ogImage} />
-      <meta name="twitter:site" content="@WalPay" />
+      <meta name="twitter:site" content="@WalP" />
       <link rel="canonical" href={canonicalUrl} />
       <link rel="preconnect" href="https://access-testnet.onflow.org" />
       <link rel="preconnect" href="https://api.onflow.org" />

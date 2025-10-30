@@ -39,11 +39,11 @@ export async function sendOtpEmail({ to, code, purpose, expiresAt }) {
 function otpSubject(purpose) {
   switch (purpose) {
     case "login":
-      return "Your WalPay login code";
+      return "Your WalP login code";
     case "reset":
-      return "Reset your WalPay password";
+      return "Reset your WalP password";
     default:
-      return "Verify your WalPay account";
+      return "Verify your WalP account";
   }
 }
 
@@ -51,11 +51,11 @@ function otpBody({ code, purpose, expiresAt }) {
   const expiryText = expiresAt ? new Date(expiresAt).toLocaleString() : "soon";
   return `
   <div style="font-family: Arial, sans-serif; line-height: 1.6;">
-    <h2 style="color:#0f9d58;">WalPay</h2>
+    <h2 style="color:#0f9d58;">WalP</h2>
     <p>Use the verification code below for your ${purpose} request.</p>
     <div style="font-size: 32px; font-weight: bold; letter-spacing: 4px; margin: 24px 0;">${code}</div>
     <p>This code will expire at <strong>${expiryText}</strong>. If you did not request this, you can ignore this email.</p>
-    <p style="margin-top: 32px;">Thanks,<br/>The WalPay team</p>
+    <p style="margin-top: 32px;">Thanks,<br/>The WalP team</p>
   </div>
   `;
 }

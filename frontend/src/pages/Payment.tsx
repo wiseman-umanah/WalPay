@@ -72,7 +72,7 @@ export default function PublicPaymentPage() {
   }, [item]);
   const appUrl =
     import.meta.env.VITE_APP_URL ??
-    (typeof window !== "undefined" ? window.location.origin : "https://walpay.example");
+    (typeof window !== "undefined" ? window.location.origin : "https://walp.example");
   const canonicalUrl = useMemo(
     () => `${appUrl.replace(/\/$/, "")}/payment/${slug ?? ""}`,
     [appUrl, slug]
@@ -87,7 +87,7 @@ export default function PublicPaymentPage() {
       "@context": "https://schema.org",
       "@type": "Product",
       name: item.name,
-      description: item.description ?? "Flow payment link powered by WalPay.",
+      description: item.description ?? "Flow payment link powered by WalP.",
       image: item.imageUrl ? [item.imageUrl] : undefined,
       offers: {
         "@type": "Offer",
@@ -102,7 +102,7 @@ export default function PublicPaymentPage() {
       },
       brand: {
         "@type": "Organization",
-        name: "WalPay Merchant",
+        name: "WalP Merchant",
       },
     };
   }, [item, appUrl, slug, totalFlow]);
@@ -142,7 +142,7 @@ export default function PublicPaymentPage() {
       <>
         <Seo
           title="Preparing checkout"
-          description="Loading Flow-native checkout details. WalPay verifies payment data before rendering the link."
+          description="Loading Flow-native checkout details. WalP verifies payment data before rendering the link."
           noIndex
           canonical={canonicalUrl}
         />
@@ -163,7 +163,7 @@ export default function PublicPaymentPage() {
       <>
         <Seo
           title="Payment unavailable"
-          description={error ?? "This WalPay link is inactive or cannot be found."}
+          description={error ?? "This WalP link is inactive or cannot be found."}
           canonical={canonicalUrl}
         />
         <div className="min-h-screen bg-slate-950 text-slate-400">
@@ -184,14 +184,14 @@ export default function PublicPaymentPage() {
         description={
           item.description
             ? item.description
-            : `Complete a secure Flow payment for ${item.name} using WalPay checkout.`
+            : `Complete a secure Flow payment for ${item.name} using WalP checkout.`
         }
         image={item.imageUrl ?? null}
         canonical={canonicalUrl}
         structuredData={structuredData ?? undefined}
         keywords={[
           `${item.name} Flow payment`,
-          "WalPay checkout",
+          "WalP checkout",
           "Flow crypto payment",
           "digital goods payment link",
         ]}
@@ -203,7 +203,7 @@ export default function PublicPaymentPage() {
           <div className="w-full max-w-4xl rounded-[40px] border border-white/10 bg-white/5 p-8 shadow-[0_50px_120px_-50px_rgba(16,185,129,0.6)] backdrop-blur-xl sm:p-12">
             <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/5 pb-6">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-emerald-300/80">WalPay Checkout</p>
+              <p className="text-xs font-semibold uppercase tracking-widest text-emerald-300/80">WalP Checkout</p>
               <h1 className="text-2xl font-semibold text-white">Secure Flow payment</h1>
             </div>
 

@@ -19,11 +19,11 @@ if (existsSync(envPath)) {
 }
 
 const DEFAULT_PORT = 4000;
-const DEFAULT_MONGO_URI = env.DB_URI || env.MONGO_URI || "mongodb://127.0.0.1:27017/walpay";
+const DEFAULT_MONGO_URI = env.DB_URI;
 
 export const appConfig = {
   port: Number(env.PORT || DEFAULT_PORT),
-  mongoUri: env.MONGO_URI || env.DB_URI || DEFAULT_MONGO_URI,
+  mongoUri: env.MONGO_URI || DEFAULT_MONGO_URI,
   platformFeePercent: Number(env.PLATFORM_FEE_PERCENT || 2),
   accessTokenTtlMinutes: Number(env.ACCESS_TOKEN_TTL_MINUTES || 15),
   refreshTokenTtlDays: Number(env.REFRESH_TOKEN_TTL_DAYS || 30),
@@ -45,7 +45,7 @@ export const appConfig = {
     cloudName: env.CLOUDINARY_CLOUD_NAME || "",
     apiKey: env.CLOUDINARY_API_KEY || "",
     apiSecret: env.CLOUDINARY_API_SECRET || "",
-    folder: env.CLOUDINARY_FOLDER || "walpay",
+    folder: env.CLOUDINARY_FOLDER || "walp",
   },
 };
 

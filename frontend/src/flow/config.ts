@@ -5,7 +5,7 @@ const ensureHexPrefix = (value?: string) => {
 
 export const flowConfig = {
   walpayAddress: ensureHexPrefix(import.meta.env.VITE_WALPAY_ADDRESS || "0xf8d6e0586b0a20c7"),
-  walpayContract: import.meta.env.VITE_WALPAY_NAME || "WalPay",
+  walpayContract: import.meta.env.VITE_WALPAY_NAME || "WalP",
   fungibleTokenAddress: ensureHexPrefix(
     import.meta.env.VITE_FUNGIBLE_TOKEN_ADDRESS || "0xee82856bf20e2aa6"
   ),
