@@ -34,12 +34,14 @@ export function Seo({
   structuredData,
   keywords,
 }: SeoProps) {
+  const isBrowser = typeof window !== "undefined";
   const baseUrl =
     import.meta.env.VITE_APP_URL ??
-    (typeof window !== "undefined" ? window.location.origin : "https://walpay.example");
+    (isBrowser ? window.location.origin : "https://walpay.example");
+  const currentPath = isBrowser ? window.location.pathname : "/";
   const canonicalUrl =
     canonical ??
-    (typeof window !== "undefined" ? window.location.href : `${baseUrl}${typeof window !== "undefined" ? window.location.pathname : ""}`);
+    `${baseUrl.replace(/\/$/, "")}${currentPath}`;
 
   const finalTitle = title ? `${title} | WalPay` : DEFAULT_TITLE;
   const finalDescription = description ?? DEFAULT_DESCRIPTION;
