@@ -22,6 +22,6 @@ function discoveryInclude() {
   if (!raw) return [];
   return raw
     .split(",")
-    .map((entry) => entry.trim())
+    .map((entry: string) => entry.trim())
     .filter(Boolean);
 }

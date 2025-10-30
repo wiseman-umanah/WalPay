@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { HiOutlineShieldCheck, HiSparkles, HiOutlineCurrencyDollar } from "react-icons/hi2";
 import { FiArrowLeft } from "react-icons/fi";
@@ -588,10 +588,15 @@ function PrimaryButton({ children, disabled }: PrimaryButtonProps) {
 function Terms() {
   return (
     <p className="text-xs text-slate-500">
-      By clicking "Create account" you agree to WalPay's
-      <span className="text-emerald-300"> terms of service </span>
-      and
-      <span className="text-emerald-300"> privacy policy</span>.
+      By clicking "Create account" you agree to WalPay's{" "}
+      <Link to="/terms" className="text-emerald-300 hover:text-emerald-200">
+        terms of service
+      </Link>{" "}
+      and{" "}
+      <Link to="/privacy" className="text-emerald-300 hover:text-emerald-200">
+        privacy policy
+      </Link>
+      .
     </p>
   );
 }

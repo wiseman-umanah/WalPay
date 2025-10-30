@@ -25,7 +25,7 @@ createRoot(document.getElementById('root')!).render(
 			walletconnectProjectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID
 
 		}}
-    	colorMode='light'
+    	colorMode='dark'
     >
         <AuthProvider>
             <BrowserRouter>

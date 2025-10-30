@@ -1,47 +1,79 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Sidebar, { type SidebarSection } from "../components/Sidebar";
-import { Payment } from "../components/Payment";
+import {
+  PaymentLinksSection,
+  TransactionsSection,
+  ProfileSection,
+  SettingsSection,
+} from "../components/dashboard";
 import { useFlowCurrentUser } from "@onflow/react-sdk";
 import { useAuth } from "../context/AuthContext";
-import { listPayments, createPayment, deletePayment, type PaymentRecord } from "../api/payments";
-import { createPaymentOnChain, deactivatePaymentOnChain } from "../flow/walpay";
+import {
+  listPayments,
+  createPayment,
+  deletePayment,
+  listTransactions,
+  type PaymentRecord,
+  type TransactionRecord,
+} from "../api/payments";
+import { createPaymentOnChain, deactivatePaymentOnChain, getSellerEarningsOnChain } from "../flow/walpay";
+import { changePassword } from "../api/profile";
 import { useNavigate } from "react-router-dom";
-import { PiCoinsDuotone, PiArrowBendUpRightDuotone, PiUsersThreeDuotone } from "react-icons/pi";
-
-const statCards = (
-  stats: { count: number; totalFlow: number; totalUsd: number }
-): { title: string; value: string; helper: string; icon: React.ComponentType<{ className?: string }> }[] => [
-  {
-    title: "Active payment links",
-    value: String(stats.count),
-    helper: "Links available to customers",
-    icon: PiCoinsDuotone,
-  },
-  {
-    title: "Total Flow earned",
-    value: `${stats.totalFlow.toFixed(2)} FLOW`,
-    helper: "Cumulative settlements",
-    icon: PiArrowBendUpRightDuotone,
-  },
-  {
-    title: "USD equivalent",
-    value: stats.totalUsd ? `$${stats.totalUsd.toFixed(2)}` : "—",
-    helper: "Based on configured FX",
-    icon: PiUsersThreeDuotone,
-  },
-];
+import { PiCoinsDuotone, PiArrowBendUpRightDuotone, PiUsersThreeDuotone, PiListDuotone } from "react-icons/pi";
 
 const brandGradient = "bg-gradient-to-r from-emerald-400 via-emerald-500 to-sky-500";
 
+type StatCard = {
+  title: string;
+  value: string;
+  helper: string;
+  icon: React.ComponentType<{ className?: string }>;
+};
+
+function buildStatCards(
+  summary: { count: number; totalFlow: number; totalUsd: number },
+  loadingFlow: boolean
+): StatCard[] {
+  return [
+    {
+      title: "Active payment links",
+      value: String(summary.count),
+      helper: "Links available to customers",
+      icon: PiCoinsDuotone,
+    },
+    {
+      title: "Total Flow earned",
+      value: loadingFlow ? "—" : `${summary.totalFlow.toFixed(2)} FLOW`,
+      helper: loadingFlow ? "Fetching on-chain earnings" : "Reported directly from WalPay",
+      icon: PiArrowBendUpRightDuotone,
+    },
+    {
+      title: "USD equivalent",
+      value: summary.totalUsd ? `$${summary.totalUsd.toFixed(2)}` : "—",
+      helper: "Based on configured FX",
+      icon: PiUsersThreeDuotone,
+    },
+  ];
+}
+
 const Dashboard: React.FC = () => {
   const [activeSection, setActiveSection] = useState<SidebarSection>("payment");
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [payments, setPayments] = useState<PaymentRecord[]>([]);
   const [loadingPayments, setLoadingPayments] = useState(true);
   const [loadingAction, setLoadingAction] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [highlightWallet, setHighlightWallet] = useState(false);
 
-  const { seller, logout } = useAuth();
+  const [transactions, setTransactions] = useState<TransactionRecord[]>([]);
+  const [transactionsError, setTransactionsError] = useState<string | null>(null);
+  const [loadingTransactions, setLoadingTransactions] = useState(false);
+  const [transactionsFetched, setTransactionsFetched] = useState(false);
+
+  const [chainEarnings, setChainEarnings] = useState<number | null>(null);
+  const [loadingEarnings, setLoadingEarnings] = useState(false);
+
+  const { seller, updateProfile } = useAuth();
   const navigate = useNavigate();
 
   const { user, authenticate, unauthenticate } = useFlowCurrentUser();
@@ -66,15 +98,66 @@ const Dashboard: React.FC = () => {
     void fetchPayments();
   }, [seller, navigate]);
 
-  const stats = useMemo(() => {
-    const totalFlow = payments.reduce((sum, payment) => sum + (Number(payment.totalFlow) || 0), 0);
+  useEffect(() => {
+    if (!user?.addr) {
+      setChainEarnings(null);
+      return;
+    }
+    let cancelled = false;
+    const fetchEarnings = async () => {
+      setLoadingEarnings(true);
+      try {
+        const value = await getSellerEarningsOnChain(user.addr!);
+	
+        if (!cancelled) {
+          setChainEarnings(value);
+        }
+      } catch {
+        if (!cancelled) {
+          setChainEarnings(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadingEarnings(false);
+        }
+      }
+    };
+    fetchEarnings();
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.addr]);
+
+  useEffect(() => {
+    if (activeSection !== "transactions" || transactionsFetched || !seller) return;
+    const fetchTransactions = async () => {
+      setLoadingTransactions(true);
+      setTransactionsError(null);
+      try {
+        const data = await listTransactions();
+        setTransactions(data.items);
+        setTransactionsFetched(true);
+      } catch (err: any) {
+        setTransactionsError(err?.response?.data?.error ?? "Unable to load transactions.");
+      } finally {
+        setLoadingTransactions(false);
+      }
+    };
+    fetchTransactions();
+  }, [activeSection, transactionsFetched, seller]);
+
+  const statSummary = useMemo(() => {
+    const totalLinks = payments.length;
     const totalUsd = payments.reduce((sum, payment) => sum + (Number(payment.priceUSD ?? 0) || 0), 0);
+    const onChain = chainEarnings ?? payments.reduce((sum, payment) => sum + (Number(payment.totalFlow) || 0), 0);
     return {
-      count: payments.length,
-      totalFlow,
+      count: totalLinks,
+      totalFlow: onChain,
       totalUsd,
     };
-  }, [payments]);
+  }, [payments, chainEarnings]);
+
+  const statCards = useMemo(() => buildStatCards(statSummary, loadingEarnings), [statSummary, loadingEarnings]);
 
   const handleCreatePayment = async (payload: {
     name: string;
@@ -138,14 +221,77 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const renderSection = () => {
+    switch (activeSection) {
+      case "payment":
+        return (
+          <PaymentLinksSection
+            payments={payments}
+            loading={loadingPayments}
+            walletConnected={Boolean(user?.loggedIn)}
+            walletAddress={user?.addr ?? null}
+            onRequireWallet={() => {
+              setHighlightWallet(true);
+              setTimeout(() => setHighlightWallet(false), 1500);
+            }}
+            onCreatePayment={handleCreatePayment}
+            onDeletePayment={handleDeletePayment}
+          />
+        );
+      case "transactions":
+        return (
+          <TransactionsSection
+            transactions={transactions}
+            loading={loadingTransactions}
+            error={transactionsError}
+            onRetry={() => setTransactionsFetched(false)}
+          />
+        );
+      case "profile":
+        return (
+          <ProfileSection
+            seller={seller ?? null}
+            walletAddress={user?.addr ?? null}
+            onUpdateProfile={updateProfile}
+            onChangePassword={changePassword}
+          />
+        );
+      default:
+        return <SettingsSection />;
+    }
+  };
+
   return (
     <div className="relative flex min-h-screen overflow-hidden bg-slate-950 text-slate-100">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.14),transparent_55%),radial-gradient(circle_at_bottom,_rgba(59,130,246,0.12),transparent_50%)]" />
       <div className="pointer-events-none absolute left-1/2 top-[-18%] h-96 w-96 -translate-x-1/2 rounded-full bg-emerald-500/20 blur-3xl" />
+
+      <button
+        type="button"
+        className="absolute left-4 top-5 z-30 flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-slate-200 transition hover:border-emerald-400/40 hover:text-white lg:hidden"
+        onClick={() => setMobileNavOpen(true)}
+      >
+        <PiListDuotone className="h-6 w-6" />
+      </button>
+
       <Sidebar active={activeSection} onSelect={setActiveSection} />
+      {mobileNavOpen ? (
+        <>
+          <div
+            className="fixed inset-0 z-30 bg-slate-950/60 backdrop-blur lg:hidden"
+            onClick={() => setMobileNavOpen(false)}
+          />
+          <Sidebar
+            active={activeSection}
+            onSelect={setActiveSection}
+            mobile
+            onClose={() => setMobileNavOpen(false)}
+          />
+        </>
+      ) : null}
 
       <div className="relative z-10 flex min-h-screen flex-1 flex-col">
-        <header className="px-6 pt-12 sm:px-10">
+        <header className="px-4 pt-14 sm:px-8 lg:pt-12">
           <div className="flex flex-wrap items-center justify-between gap-6">
             <div className="space-y-2">
               <p className="text-sm font-semibold uppercase tracking-widest text-emerald-300/80">WalPay Studio</p>
@@ -171,27 +317,21 @@ const Dashboard: React.FC = () => {
                   className={`${brandGradient} flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold text-slate-950 shadow-lg transition hover:brightness-110 ${
                     highlightWallet ? "animate-pulse" : ""
                   }`}
-                  onClick={authenticate}
+                  onClick={() => {
+                    setHighlightWallet(false);
+                    authenticate();
+                  }}
                 >
                   Connect wallet
                 </button>
               )}
-              <button
-                className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:border-red-400/50 hover:text-red-200"
-                onClick={async () => {
-                  await logout();
-                  navigate("/");
-                }}
-              >
-                Sign out
-              </button>
             </div>
           </div>
         </header>
 
-        <main className="flex-1 space-y-8 px-6 pb-16 pt-8 sm:px-10">
+        <main className="flex-1 space-y-8 px-4 pb-16 pt-6 sm:px-8">
           <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {statCards(stats).map(({ title, value, helper, icon: Icon }) => (
+            {statCards.map(({ title, value, helper, icon: Icon }) => (
               <article
                 key={title}
                 className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-[0_30px_90px_-45px_rgba(16,185,129,0.7)] backdrop-blur"
@@ -221,30 +361,7 @@ const Dashboard: React.FC = () => {
             </div>
           ) : null}
 
-          <section className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-[0_40px_100px_-50px_rgba(59,130,246,0.5)] backdrop-blur">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold text-white">Payment links</h2>
-                <p className="text-sm text-slate-400">
-                  Create and manage Flow payment links with built-in fee routing.
-                </p>
-              </div>
-            </div>
-            <div className="mt-6">
-              <Payment
-                payments={payments}
-                loading={loadingPayments}
-                walletConnected={Boolean(user?.loggedIn)}
-                walletAddress={user?.addr ?? null}
-                onRequireWallet={() => {
-                  setHighlightWallet(true);
-                  setTimeout(() => setHighlightWallet(false), 1500);
-                }}
-                onCreatePayment={handleCreatePayment}
-                onDeletePayment={handleDeletePayment}
-              />
-            </div>
-          </section>
+          {renderSection()}
         </main>
       </div>
     </div>

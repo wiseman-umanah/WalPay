@@ -17,8 +17,6 @@ type PaymentItem = {
   redirectUrl?: string | null;
 };
 
-const FLOW_GREEN = "#00b140";
-
 export default function PublicPaymentPage() {
   const [item, setItem] = useState<PaymentItem | null>(null);
   const [imageVisible, setImageVisible] = useState(true);

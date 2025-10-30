@@ -11,3 +11,10 @@ export async function updateProfile(payload: { businessName?: string; country?: 
   return data.profile;
 }
 
+export async function changePassword(currentPassword: string, newPassword: string) {
+  const { data } = await api.patch<{ message: string }>("/profile/password", {
+    currentPassword,
+    newPassword,
+  });
+  return data;
+}

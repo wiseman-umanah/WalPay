@@ -7,7 +7,10 @@ export async function loginWithMessage() {
 
   // 2) Message to sign (hex-encoded UTF-8); keep it short & include nonce + your domain
   const msg = `WalP login\nnonce:${nonce}\norigin:${location.origin}`;
-  const hexMsg = Buffer.from(msg, "utf8").toString("hex");
+  const utf8 = new TextEncoder().encode(msg);
+  const hexMsg = Array.from(utf8)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 
   // 3) Request signature(s) from wallet
   const sigRes = await fcl.currentUser().signUserMessage(hexMsg);
@@ -28,4 +31,3 @@ export async function loginWithMessage() {
   if (!r.ok) throw new Error("Auth failed");
   return true;
 }
-

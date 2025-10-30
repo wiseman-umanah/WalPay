@@ -1,4 +1,4 @@
-import { arg, mutate, tx, t } from "@onflow/fcl";
+import { arg, mutate, tx, t, query } from "@onflow/fcl";
 import { flowConfig, toUFix64 } from "./config";
 
 const CREATE_PAYMENT_TX = `
@@ -34,6 +34,14 @@ transaction(id: String) {
     prepare(signer: &Account) {
         WalPay.deactivatePayment(id: id, seller: signer.address)
     }
+}
+`;
+
+const GET_EARNINGS_SCRIPT = `
+import WalPay from ${flowConfig.walpayAddress}
+
+access(all) fun main(seller: Address): UFix64 {
+    return WalPay.getSellerEarnings(seller: seller)
 }
 `;
 
@@ -79,4 +87,13 @@ export async function deactivatePaymentOnChain(params: { id: string }) {
   });
   const result = await tx(transactionId).onceSealed();
   return { transactionId, result };
+}
+
+export async function getSellerEarningsOnChain(address: string) {
+  const cadence = GET_EARNINGS_SCRIPT;
+  const result = await query({
+    cadence,
+    args: () => [arg(address, t.Address)],
+  });
+  return Number(result ?? 0);
 }

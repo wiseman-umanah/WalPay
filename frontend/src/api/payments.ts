@@ -21,6 +21,17 @@ export type PaymentRecord = {
   sellerAddress?: string | null;
 };
 
+export type TransactionRecord = {
+  id: string;
+  paymentId: string;
+  paymentName: string | null;
+  paymentSlug: string | null;
+  txId: string;
+  kind: string;
+  payerAddress: string | null;
+  createdAt: string;
+};
+
 export type PaymentListResponse = {
   items: PaymentRecord[];
   pagination: {
@@ -56,6 +67,13 @@ export async function deletePayment(id: string, txId: string, walletAddress: str
     data: { txId, walletAddress },
   });
   return data.payment;
+}
+
+export async function listTransactions(params: { limit?: number; offset?: number } = {}) {
+  const { data } = await api.get<{ items: TransactionRecord[]; pagination: unknown }>("/transactions", {
+    params,
+  });
+  return data;
 }
 
 export async function recordPaymentTransaction(
