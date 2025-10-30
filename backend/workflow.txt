@@ -1,0 +1,31 @@
+create a signup flow -> Password + Email + Business Name + Country = otp (short lived tokens -> refresh(30 days), rotate(60 days))
+create otp flow -> Email = verify otp
+resend otp flow -> Email = verify otp
+request password reset flow -> Email = link to reset page
+reset password flow -> Email = verify otp
+DB setup
+
+create a login flow -> Password + Email
+otp login flow -> Email = verify otp
+
+create a logout flow -> revoke keys
+
+create a refresh flow -> rotate keys
+
+create payment link flow -> product image, name, description, priceFlow, priceUSD, custom success message, redirect url
+Allow user to include these details -> Sign with wallet 
+Get USD priceFlow -> convert to Flow = priceFlow
+Generate paymentLink -> random string
+Add Fee (2%) -> priceFlow + feeFlow = totalFlow
+Create Payment
+
+Save Payment transaction on creation on blockchain to DB
+
+Delete Payment on deactivation on blockchain to DB -tx hash
+Save Transaction on payment on blockchain to DB - tx hash
+
+Profile -> sellerId, business name, country, joinedAt
+Update Profile details -> business name, country
+Delete Profile -> remove from DB
+
+

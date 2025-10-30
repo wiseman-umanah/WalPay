@@ -1,0 +1,27 @@
+createPayment:
+	id: String
+	amountFlow: UFix64
+	seller: Address
+
+calculateFees:
+	price: UFix64
+	percent: UFix64
+	returns: UFix64
+
+getSellerEarnings:
+	seller: Address
+	returns: UFix64
+
+getPayment:
+	id: String
+	returns: Payment
+
+deactivatePayment:
+	id: String
+	payer: Address
+
+pay:
+	id: String
+	payer: Address
+	vault: @{FungibleToken.Vault}
+	clientRef: String?

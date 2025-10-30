@@ -7,6 +7,15 @@ import { countChars, generateSlugValue, sanitizeSlug, validateSlug } from "../ut
 interface PaymentLinkModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onCreate: (payload: {
+    name: string;
+    description: string;
+    amountFlow: number;
+    successMessage: string;
+    redirectUrl?: string;
+    slug: string;
+    imageBase64?: string | null;
+  }) => Promise<void>;
 }
 
 const MAX_DESCRIPTION_LENGTH = 255;
@@ -14,7 +23,7 @@ const MAX_SUCCESS_MESSAGE_LENGTH = 50;
 const MAX_NAME_LENGTH = 50;
 const MIN_SLUG_LENGTH = 5;
 const MAX_SLUG_LENGTH = 20;
-const BASE_PAYMENT_PATH = "url/payment/";
+const BASE_PAYMENT_PATH = typeof window !== "undefined" ? `${window.location.origin}/payment/` : "/payment/";
 const INITIAL_CROP: PercentCrop = {
   unit: "%",
   width: 100,
@@ -25,7 +34,7 @@ const INITIAL_CROP: PercentCrop = {
 
 
 
-const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({ isOpen, onClose }) => {
+const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({ isOpen, onClose, onCreate }) => {
   const [productName, setProductName] = useState("");
   const [description, setDescription] = useState("");
   const [slug, setSlug] = useState("");
@@ -46,6 +55,8 @@ const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({ isOpen, onClose }) 
   const [descriptionError, setDescriptionError] = useState<string | null>(null);
   const [successMessageError, setSuccessMessageError] = useState<string | null>(null);
   const [amountFlow, setAmountFlow] = useState(1);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const wordCount = useMemo(() => countChars(description), [description]);
 
@@ -61,6 +72,7 @@ const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({ isOpen, onClose }) 
       setImageFile(null);
       setImagePreviewUrl(null);
       setSuccessMessage("Thank you");
+      setAmountFlow(1);
       const initialSlug = generateSlugValue(MAX_SLUG_LENGTH);
       setSlug(initialSlug);
       setSlugError(validateSlug(initialSlug, MIN_SLUG_LENGTH, MAX_SLUG_LENGTH));
@@ -250,7 +262,7 @@ const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({ isOpen, onClose }) 
     }
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const sanitizedSlug = sanitizeSlug(slug, MAX_SLUG_LENGTH);
     if (sanitizedSlug !== slug) {
@@ -261,21 +273,35 @@ const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({ isOpen, onClose }) 
       setSlugError(slugValidationError);
       return;
     }
+    if (!Number.isFinite(amountFlow) || amountFlow <= 0) {
+      setSubmitError("Amount in FLOW must be greater than zero");
+      return;
+    }
     const selectedImageFile = imageStage === "preview" ? croppedFile : null;
+    let imageBase64: string | null = null;
+    if (selectedImageFile) {
+      imageBase64 = await fileToBase64(selectedImageFile);
+    }
     setSlugError(null);
-    const payload = {
-      imageFile: selectedImageFile,
-      imagePreviewUrl: finalImageUrl,
-      productName,
-      description,
-      slug: sanitizedSlug,
-      redirectLink,
-      successMessage,
-	  amountFlow,
-    };
+    setSubmitError(null);
 
-    console.log("Payment link payload", payload);
-    onClose();
+    try {
+      setSubmitting(true);
+      await onCreate({
+        name: productName,
+        description,
+        amountFlow,
+        successMessage,
+        redirectUrl: redirectLink || undefined,
+        slug: sanitizedSlug,
+        imageBase64,
+      });
+      onClose();
+    } catch (err: any) {
+      setSubmitError(err?.response?.data?.error ?? "Failed to create payment link. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -535,6 +561,10 @@ const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({ isOpen, onClose }) 
             />
           </div>
 
+          {submitError ? (
+            <p className="text-sm text-red-600">{submitError}</p>
+          ) : null}
+
           <div className="flex justify-end gap-3 pt-4">
             <button
               type="button"
@@ -545,10 +575,12 @@ const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({ isOpen, onClose }) 
             </button>
             <button
               type="submit"
-              disabled={Boolean(slugError)}
-              className={`rounded-md px-4 py-2 font-semibold text-white transition ${slugError ? "cursor-not-allowed bg-green-300" : "bg-green-500 hover:bg-green-600"}`}
+              disabled={Boolean(slugError) || submitting}
+              className={`rounded-md px-4 py-2 font-semibold text-white transition ${
+                slugError || submitting ? "cursor-not-allowed bg-green-300" : "bg-green-500 hover:bg-green-600"
+              }`}
             >
-              Save Link
+              {submitting ? "Saving..." : "Save Link"}
             </button>
           </div>
         </form>
@@ -558,3 +590,18 @@ const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({ isOpen, onClose }) 
 };
 
 export default PaymentLinkModal;
+
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") {
+        resolve(reader.result);
+      } else {
+        reject(new Error("Failed to read file"));
+      }
+    };
+    reader.onerror = () => reject(reader.error ?? new Error("File read error"));
+    reader.readAsDataURL(file);
+  });
+}

@@ -1,105 +1,42 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import PaymentLinkModal from "./PaymentLinkModal";
+import type { PaymentRecord } from "../api/payments";
 
-interface PaymentLink {
-  id: string;
-  name: string;
-  amountFlow: number;
-  amountCurrency: string;
-  created: string;
-  link: string;
-}
+type PaymentProps = {
+  payments: PaymentRecord[];
+  loading: boolean;
+  walletConnected: boolean;
+  onRequireWallet: () => void;
+  onCreatePayment: (payload: {
+    name: string;
+    description: string;
+    amountFlow: number;
+    successMessage: string;
+    redirectUrl?: string;
+    slug: string;
+    imageBase64?: string | null;
+  }) => Promise<void>;
+  onDeletePayment: (payment: PaymentRecord) => Promise<void>;
+};
 
-export function Payment() {
+export function Payment({
+  payments,
+  loading,
+  walletConnected,
+  onRequireWallet,
+  onCreatePayment,
+  onDeletePayment,
+}: PaymentProps) {
   const [search, setSearch] = useState("");
   const [isModalOpen, setModalOpen] = useState(false);
-  const [paymentLinks] = useState<PaymentLink[]>([
-    {
-      id: "1",
-      name: "Website Order",
-      amountFlow: 50,
-      amountCurrency: "NGN 25,000",
-      created: "Oct 16, 2021",
-      link: "/payment/1",
-    },
-    {
-      id: "2",
-      name: "School Fees",
-      amountFlow: 20,
-      amountCurrency: "NGN 10,000",
-      created: "Nov 2, 2021",
-      link: "/payment/2",
-    },
-    {
-      id: "3",
-      name: "Product Purchase",
-      amountFlow: 30,
-      amountCurrency: "NGN 15,000",
-      created: "Dec 4, 2021",
-      link: "/payment/3",
-    },
-    {
-      id: "4",
-      name: "Donation Fund",
-      amountFlow: 10,
-      amountCurrency: "NGN 5,000",
-      created: "Jan 12, 2022",
-      link: "/payment/4",
-    },
-    {
-      id: "5",
-      name: "Service Payment",
-      amountFlow: 40,
-      amountCurrency: "NGN 20,000",
-      created: "Feb 10, 2022",
-      link: "/payment/5",
-    },
-	{
-      id: "6",
-      name: "Website Order",
-      amountFlow: 50,
-      amountCurrency: "NGN 25,000",
-      created: "Oct 16, 2021",
-      link: "/payment/6",
-    },
-    {
-      id: "7",
-      name: "School Fees",
-      amountFlow: 20,
-      amountCurrency: "NGN 10,000",
-      created: "Nov 2, 2021",
-      link: "/payment/7",
-    },
-    {
-      id: "8",
-      name: "Product Purchase",
-      amountFlow: 30,
-      amountCurrency: "NGN 15,000",
-      created: "Dec 4, 2021",
-      link: "/payment/8",
-    },
-    {
-      id: "9",
-      name: "Donation Fund",
-      amountFlow: 10,
-      amountCurrency: "NGN 5,000",
-      created: "Jan 12, 2022",
-      link: "/payment/9",
-    },
-    {
-      id: "10",
-      name: "Service Payment",
-      amountFlow: 40,
-      amountCurrency: "NGN 20,000",
-      created: "Feb 10, 2022",
-      link: "/payment/10",
-    },
-  ]);
 
-  // Filter the payment links based on the search query
-  const filteredLinks = paymentLinks.filter((link) =>
-    link.name.toLowerCase().includes(search.toLowerCase())
+  const filteredLinks = useMemo(
+    () =>
+      payments.filter((link) =>
+        link.name.toLowerCase().includes(search.toLowerCase())
+      ),
+    [payments, search]
   );
 
   return (
@@ -116,10 +53,20 @@ export function Payment() {
         </div>
         <button
           type="button"
-          onClick={() => setModalOpen(true)}
-          className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-md"
+          onClick={() => {
+            if (!walletConnected) {
+              onRequireWallet();
+              return;
+            }
+            setModalOpen(true);
+          }}
+          className={`flex items-center gap-2 px-4 py-2 rounded-md transition ${
+            walletConnected
+              ? "bg-green-500 text-white hover:bg-green-600"
+              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+          }`}
         >
-          <FaPlus />	
+          <FaPlus />
           <p>Create Payment Link</p>
         </button>
       </div>
@@ -132,33 +79,62 @@ export function Payment() {
               <th className="px-4 py-10 text-left">Name</th>
               <th className="px-4 py-10 text-left">Amount (Flow)</th>
               <th className="px-4 py-10 text-left">Amount (Currency)</th>
+              <th className="px-4 py-10 text-left">Total (Flow)</th>
               <th className="px-4 py-10 text-left">Created</th>
               <th className="px-4 py-10 text-left">Link</th>
               <th className="px-4 py-10 text-left">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {filteredLinks.map((link, index) => (
+            {loading ? (
+              <tr>
+                <td colSpan={8} className="px-4 py-10 text-center text-gray-500">
+                  Loading payment links…
+                </td>
+              </tr>
+            ) : filteredLinks.length === 0 ? (
+              <tr>
+                <td colSpan={8} className="px-4 py-10 text-center text-gray-500">
+                  No payment links yet.
+                </td>
+              </tr>
+            ) : (
+              filteredLinks.map((link, index) => (
               <tr key={link.id} className="border-b border-b-slate-200">
                 <td className="px-4 py-10">{index + 1}</td>
                 <td className="px-4 py-10">{link.name}</td>
-                <td className="px-4 py-10">{link.amountFlow} Flow</td>
-                <td className="px-4 py-10">{link.amountCurrency}</td>
-                <td className="px-4 py-10">{link.created}</td>
+                <td className="px-4 py-10">{Number(link.priceFlow).toFixed(4)} Flow</td>
+                <td className="px-4 py-10">{link.priceUSD != null ? `$${Number(link.priceUSD).toFixed(2)}` : "—"}</td>
+                <td className="px-4 py-10">{Number(link.totalFlow).toFixed(4)} Flow</td>
                 <td className="px-4 py-10">
-                  <a href={link.link} className="text-blue-500 hover:underline">
+                  {new Date(link.createdAt).toLocaleString()}
+                </td>
+                <td className="px-4 py-10">
+                  <a href={`/payment/${link.paymentLink}`} className="text-blue-500 hover:underline" target="_blank" rel="noreferrer">
                     Preview
                   </a>
                 </td>
                 <td className="px-4 py-10">
-                  <button className="text-red-500">Delete</button>
+                  <button
+                    type="button"
+                    className="text-red-500 hover:underline"
+                    onClick={() => onDeletePayment(link)}
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
-            ))}
+            )))}
           </tbody>
         </table>
       </div>
-      <PaymentLinkModal isOpen={isModalOpen} onClose={() => setModalOpen(false)} />
+      <PaymentLinkModal
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        onCreate={async (payload) => {
+          await onCreatePayment(payload);
+        }}
+      />
     </>
   );
 }

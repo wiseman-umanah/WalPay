@@ -77,6 +77,15 @@
 		"emulator-account": {
 			"address": "f8d6e0586b0a20c7",
 			"key": "c372f02cc61a2c2084a0a19d230c7bc3828cbedbafc48d6275e7d5ed71d97775"
+		},
+		"knox": {
+			"address": "$FLOW_ACCOUNT_ADDRESS",
+			"key": {
+				"type": "hex",
+				"signatureAlgorithm": "ECDSA_secp256k1",
+				"hashAlgorithm": "SHA2_256",
+				"privateKey": "$FLOW_ACCOUNT_PRIVATE_KEY"
+			}
 		}
 	},
 	"deployments": {
@@ -85,8 +94,31 @@
 				{
 					"name": "WalPay",
 					"args": [
-						{ "type": "Address", "value": "0x7bcb95a415452d7d" },
-						{ "type": "UFix64", "value": "2.0" }
+						{
+							"value": "0x7bcb95a415452d7d",
+							"type": "Address"
+						},
+						{
+							"value": "2.00000000",
+							"type": "UFix64"
+						}
+					]
+				}
+			]
+		},
+		"testnet": {
+			"knox": [
+				{
+					"name": "WalPay",
+					"args": [
+						{
+							"value": "0x7bcb95a415452d7d",
+							"type": "Address"
+						},
+						{
+							"value": "2.00000000",
+							"type": "UFix64"
+						}
 					]
 				}
 			]
