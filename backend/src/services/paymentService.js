@@ -15,6 +15,7 @@ function calculateFee(priceFlow) {
 
 export async function createPayment({
   sellerId,
+  sellerAddress,
   name,
   image,
   description,
@@ -45,6 +46,7 @@ export async function createPayment({
 
   const paymentDoc = {
     sellerId: sellerId.toString(),
+    sellerAddress: sellerAddress || null,
     name,
     image: uploadedImage?.url || image || null,
     imagePublicId: uploadedImage?.publicId || null,
@@ -128,6 +130,7 @@ export function serializePayment(paymentDoc) {
   return {
     id: paymentDoc._id?.toString(),
     name: paymentDoc.name,
+    sellerAddress: paymentDoc.sellerAddress,
     image: paymentDoc.image,
     description: paymentDoc.description,
     customSuccessMessage: paymentDoc.customSuccessMessage,

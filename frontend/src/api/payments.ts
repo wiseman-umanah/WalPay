@@ -18,6 +18,7 @@ export type PaymentRecord = {
   blockchainCreateTx?: string | null;
   blockchainDeactivateTx?: string | null;
   imagePublicId?: string | null;
+  sellerAddress?: string | null;
 };
 
 export type PaymentListResponse = {
@@ -44,14 +45,15 @@ export async function createPayment(payload: {
   imageBase64?: string | null;
   slug?: string;
   blockchainTxId?: string;
+  sellerAddress?: string;
 }) {
   const { data } = await api.post<{ payment: PaymentRecord }>("/payments", payload);
   return data.payment;
 }
 
-export async function deletePayment(id: string, txId?: string) {
+export async function deletePayment(id: string, txId: string, walletAddress: string) {
   const { data } = await api.delete<{ payment: PaymentRecord }>(`/payments/${id}`, {
-    data: txId ? { txId } : undefined,
+    data: { txId, walletAddress },
   });
   return data.payment;
 }

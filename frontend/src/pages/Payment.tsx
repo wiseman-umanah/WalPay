@@ -103,86 +103,108 @@ export default function PublicPaymentPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-gray-500 animate-pulse">
-        Loading payment page…
+      <div className="min-h-screen bg-slate-950 text-slate-400">
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-6 py-3">
+            <span className="h-3 w-3 animate-pulse rounded-full bg-emerald-400" />
+            Loading checkout…
+          </div>
+        </div>
       </div>
     );
   }
 
   if (error || !item) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-red-50 text-red-600 text-center px-6">
-        {error ?? "Payment not available."}
+      <div className="min-h-screen bg-slate-950 text-slate-400">
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="max-w-md rounded-3xl border border-red-400/40 bg-red-500/10 px-8 py-6 text-center text-sm text-red-100">
+            {error ?? "Payment not available."}
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white">
-      <div className="min-w-[50%] max-w-3xl border border-slate-200 rounded-md shadow-md bg-white">
-        <header className="w-full border-b border-gray-100 px-6 py-4 flex items-center justify-between">
-          <h1 className="text-lg font-semibold text-gray-900">WalPay • Checkout</h1>
+    <div className="relative min-h-screen overflow-hidden bg-slate-950 text-slate-100">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.18),transparent_55%),radial-gradient(circle_at_bottom,_rgba(59,130,246,0.16),transparent_50%)]" />
+      <div className="pointer-events-none absolute left-1/2 top-[-18%] h-80 w-80 -translate-x-1/2 rounded-full bg-emerald-500/20 blur-3xl" />
+      <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-16">
+        <div className="w-full max-w-4xl rounded-[40px] border border-white/10 bg-white/5 p-8 shadow-[0_50px_120px_-50px_rgba(16,185,129,0.6)] backdrop-blur-xl sm:p-12">
+          <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/5 pb-6">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest text-emerald-300/80">WalPay Checkout</p>
+              <h1 className="text-2xl font-semibold text-white">Secure Flow payment</h1>
+            </div>
 
-          {user?.loggedIn ? (
-            <button
-              className="bg-white border cursor-pointer border-green-500 font-bold text-green-500 px-4 py-2 rounded"
-              onClick={unauthenticate}
-            >
-              {user?.addr}
-            </button>
-          ) : (
-            <button
-              className="bg-green-500 cursor-pointer font-bold text-white px-4 py-2 rounded"
-              onClick={authenticate}
-            >
-              Connect Wallet
-            </button>
-          )}
-        </header>
-
-        <main className="px-6 py-8">
-          <div className="flex flex-col lg:flex-row gap-8">
-            {item.imageUrl && imageVisible && (
-              <div className="lg:w-1/2 w-full">
-                <div className="aspect-[4/3] w-full overflow-hidden rounded-md border border-gray-200 bg-gray-50">
-                  <img
-                    src={item.imageUrl}
-                    alt={item.name}
-                    className="h-full w-full object-cover"
-                    onError={() => setImageVisible(false)}
-                  />
-                </div>
-              </div>
+            {user?.loggedIn ? (
+              <button
+                className="flex items-center gap-2 rounded-full border border-emerald-400/50 bg-emerald-500/15 px-4 py-2 text-xs font-semibold text-emerald-200"
+                onClick={unauthenticate}
+              >
+                <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                {user?.addr}
+              </button>
+            ) : (
+              <button
+                className="bg-gradient-to-r from-emerald-400 via-emerald-500 to-sky-500 px-4 py-2 text-xs font-semibold text-slate-950 rounded-full shadow-lg transition hover:brightness-110"
+                onClick={authenticate}
+              >
+                Connect wallet
+              </button>
             )}
+          </header>
 
-            <div className={`${item.imageUrl && imageVisible ? "lg:w-1/2" : "lg:w-2/3"} w-full flex flex-col justify-center`}>
-              <div className="space-y-4">
-                <div>
-                  <h2 className="text-2xl font-semibold text-gray-900">{item.name}</h2>
-                  {item.description && (
-                    <p className="mt-2 text-gray-600 leading-relaxed">{item.description}</p>
-                  )}
+          <main className="mt-8">
+            <div className="flex flex-col gap-10 lg:flex-row">
+              {item.imageUrl && imageVisible && (
+                <div className="w-full rounded-3xl border border-white/10 bg-white/5 p-2 lg:w-1/2">
+                  <div className="aspect-[4/3] w-full overflow-hidden rounded-[26px] border border-white/10 bg-black/40">
+                    <img
+                      src={item.imageUrl}
+                      alt={item.name}
+                      className="h-full w-full object-cover"
+                      onError={() => setImageVisible(false)}
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div
+                className={`${
+                  item.imageUrl && imageVisible ? "lg:w-1/2" : "lg:w-2/3"
+                } w-full space-y-6 rounded-3xl border border-white/10 bg-white/5 p-6`}
+              >
+                <div className="space-y-3">
+                  <h2 className="text-2xl font-semibold text-white">{item.name}</h2>
+                  {item.description ? (
+                    <p className="text-sm leading-relaxed text-slate-300">{item.description}</p>
+                  ) : null}
                 </div>
 
-                <div className="rounded-lg shadow-lg border border-gray-200 divide-y divide-gray-200">
+                <div className="space-y-3 rounded-2xl border border-white/10 bg-slate-950/40 p-4">
                   <Row label="Price" value={`${round4(item.amountFlow)} FLOW`} />
                   <Row label="Charges" value={`${feeFlow} FLOW`} />
                   <Row
-                    label={<span className="font-semibold text-gray-900">Total</span>}
-                    value={<span className="font-semibold text-gray-900">{totalFlow} FLOW</span>}
+                    label={<span className="font-semibold text-white">Total</span>}
+                    value={<span className="font-semibold text-white">{totalFlow} FLOW</span>}
                   />
                 </div>
 
-                <div className="pt-2">
+                <div className="space-y-3">
                   <button
                     onClick={handlePay}
                     disabled={loadingPay || status === "success"}
-                    className="w-full inline-flex items-center justify-center shadow-lg px-5 py-3 rounded-md text-white font-semibold transition disabled:opacity-60"
-                    style={{ backgroundColor: FLOW_GREEN }}
+                    className={`w-full inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold shadow-lg transition disabled:opacity-60 ${
+                      status === "success"
+                        ? "bg-emerald-600 text-white"
+                        : "bg-gradient-to-r from-emerald-400 via-emerald-500 to-sky-500 text-slate-950 hover:brightness-110"
+                    }`}
                   >
                     {status === "processing" ? (
                       <span className="flex items-center gap-2">
-                        <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                        <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-slate-950 border-t-transparent" />
                         Processing…
                       </span>
                     ) : status === "success" ? (
@@ -191,12 +213,13 @@ export default function PublicPaymentPage() {
                       "Pay"
                     )}
                   </button>
-                  <p className="mt-3 text-xs text-gray-500">
-                    Payments are processed on Flow. You’ll confirm in your wallet.
+                  <p className="text-xs text-slate-500">
+                    Payments run on Flow. Your wallet confirms the exact amount before submission.
                   </p>
+
                   {status === "success" && successMessage ? (
-                    <div className="mt-4 rounded-lg border border-green-200 bg-green-50 p-4 text-center">
-                      <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-green-500 text-white">
+                    <div className="rounded-2xl border border-emerald-400/40 bg-emerald-500/10 p-4 text-center">
+                      <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500 text-white">
                         <svg
                           className="h-8 w-8 animate-pulse"
                           viewBox="0 0 24 24"
@@ -209,22 +232,21 @@ export default function PublicPaymentPage() {
                           <path d="M20 6L9 17l-5-5" />
                         </svg>
                       </div>
-                      <p className="text-sm font-medium text-green-700">{successMessage}</p>
+                      <p className="text-sm font-medium text-emerald-50">{successMessage}</p>
                       {item.redirectUrl ? (
-                        <p className="mt-2 text-xs text-green-600">
-                          Redirecting you shortly…
-                        </p>
+                        <p className="mt-2 text-xs text-emerald-200">Redirecting you shortly…</p>
                       ) : null}
                     </div>
                   ) : null}
+
                   {status === "error" && error ? (
-                    <p className="mt-2 text-sm text-red-600">{error}</p>
+                    <p className="text-sm text-red-300">{error}</p>
                   ) : null}
                 </div>
               </div>
             </div>
-          </div>
-        </main>
+          </main>
+        </div>
       </div>
     </div>
   );
@@ -232,9 +254,9 @@ export default function PublicPaymentPage() {
 
 function Row({ label, value }: { label: React.ReactNode; value: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between px-4 py-3">
-      <span className="text-sm text-gray-600">{label}</span>
-      <span className="text-sm">{value}</span>
+    <div className="flex items-center justify-between rounded-xl bg-white/5 px-4 py-3">
+      <span className="text-xs uppercase tracking-wide text-slate-400">{label}</span>
+      <span className="text-sm text-white">{value}</span>
     </div>
   );
 }

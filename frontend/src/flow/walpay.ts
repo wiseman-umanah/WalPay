@@ -31,8 +31,8 @@ const DEACTIVATE_PAYMENT_TX = `
 import WalPay from ${flowConfig.walpayAddress}
 
 transaction(id: String) {
-    prepare(signer: auth(Account) &Account) {
-        WalPay.deactivatePayment(id: id, payer: signer.address)
+    prepare(signer: &Account) {
+        WalPay.deactivatePayment(id: id, seller: signer.address)
     }
 }
 `;

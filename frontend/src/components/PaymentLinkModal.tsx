@@ -308,19 +308,19 @@ const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({ isOpen, onClose, on
 
   return (
     <div
-      className="fixed h-screen inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      className="fixed inset-0 z-50 flex h-screen items-center justify-center bg-slate-950/70 backdrop-blur"
       onClick={onClose}
     >
       <div
-        className="w-full max-h-[90%] overflow-y-auto  max-w-2xl rounded-xl bg-white p-6 shadow-xl"
+        className="w-full max-h-[90%] max-w-2xl overflow-y-auto rounded-[32px] border border-white/10 bg-white/5 p-6 shadow-[0_40px_110px_-60px_rgba(16,185,129,0.7)] backdrop-blur-xl sm:p-8"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-2xl font-semibold text-gray-900">Create Payment Link</h2>
+          <h2 className="text-2xl font-semibold text-white">Create payment link</h2>
           <button
             type="button"
             onClick={onClose}
-            className="text-gray-500 transition hover:text-gray-700"
+            className="text-slate-400 transition hover:text-white"
             aria-label="Close"
           >
             <FaTimes size={18} />
@@ -329,7 +329,7 @@ const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({ isOpen, onClose, on
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-slate-200">
               Image of Product/Service (Optional)
             </label>
             {imageStage === "idle" ? (
@@ -343,7 +343,7 @@ const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({ isOpen, onClose, on
                     fileInputRef.current?.click();
                   }
                 }}
-                className="mt-2 flex h-40 w-full cursor-pointer items-center justify-center rounded-md border-2 border-dashed border-gray-300 bg-gray-50 text-center text-sm text-gray-500 transition hover:border-green-500 hover:text-green-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2"
+                className="mt-2 flex h-40 w-full cursor-pointer items-center justify-center rounded-2xl border border-dashed border-white/10 bg-white/5 text-center text-sm text-slate-400 transition hover:border-emerald-400/60 hover:text-emerald-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
               >
                 <span>Click to upload image</span>
               </div>
@@ -353,7 +353,7 @@ const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({ isOpen, onClose, on
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="text-sm font-medium text-green-600 transition hover:text-green-700"
+                  className="text-sm font-medium text-emerald-300 transition hover:text-emerald-200"
                 >
                   Choose different image
                 </button>
@@ -368,7 +368,7 @@ const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({ isOpen, onClose, on
             />
             {imageStage === "cropping" && imagePreviewUrl ? (
               <>
-                <div className="mt-3 max-h-72 w-full overflow-auto rounded-md border border-gray-200 bg-white p-2">
+                <div className="mt-3 max-h-72 w-full overflow-auto rounded-2xl border border-white/10 bg-slate-950/40 p-2">
                   <ReactCrop
                     crop={crop}
                     onChange={(_, percentCrop) => setCrop(percentCrop)}
@@ -412,7 +412,7 @@ const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({ isOpen, onClose, on
               </>
             ) : null}
             {imageStage === "preview" && finalImageUrl ? (
-              <div className="group relative mt-3 max-h-72 w-max mx-auto overflow-auto rounded-md border border-gray-200 bg-white p-2">
+                <div className="group relative mx-auto mt-3 max-h-72 w-max overflow-auto rounded-2xl border border-white/10 bg-slate-950/40 p-2">
                 <img
                   src={finalImageUrl}
                   alt="Selected product preview"
@@ -421,7 +421,7 @@ const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({ isOpen, onClose, on
                 <button
                   type="button"
                   onClick={handleRemoveImage}
-                  className="absolute right-3 top-3 flex rounded-md bg-white/90 px-3 py-1 text-sm font-semibold text-red-600 opacity-0 shadow transition hover:bg-white focus-visible:opacity-100 focus-visible:pointer-events-auto group-hover:pointer-events-auto group-hover:opacity-100 pointer-events-none"
+                  className="pointer-events-none absolute right-3 top-3 flex rounded-full border border-red-400/40 bg-red-500/20 px-3 py-1 text-xs font-semibold text-red-200 opacity-0 shadow transition hover:border-red-400/60 hover:bg-red-500/30 focus-visible:pointer-events-auto focus-visible:opacity-100 group-hover:pointer-events-auto group-hover:opacity-100"
                 >
                   Remove image
                 </button>
@@ -432,10 +432,10 @@ const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({ isOpen, onClose, on
 
           <div>
             <div className="flex items-center justify-between">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-slate-200">
                 Name of Product/Service
               </label>
-              <span className="text-xs text-gray-500">{productNameWordCount}/{MAX_NAME_LENGTH} chars</span>
+              <span className="text-xs text-slate-500">{productNameWordCount}/{MAX_NAME_LENGTH} chars</span>
             </div>
             <input
               type="text"
@@ -444,19 +444,19 @@ const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({ isOpen, onClose, on
               required
               value={productName}
               onChange={handleNameChange}
-              className="mt-2 block w-full rounded-md border border-gray-300 p-2"
+              className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-emerald-400/60 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
             />
-			{productNameError ? (
-              <p className="mt-1 text-xs text-red-600">{productNameError}</p>
+            {productNameError ? (
+              <p className="mt-1 text-xs text-red-300">{productNameError}</p>
             ) : null}
           </div>
 
           <div>
             <div className="flex items-center justify-between">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-slate-200">
                 Description (Optional, up to 255 words)
               </label>
-              <span className="text-xs text-gray-500">{wordCount}/{MAX_DESCRIPTION_LENGTH} chars</span>
+              <span className="text-xs text-slate-500">{wordCount}/{MAX_DESCRIPTION_LENGTH} chars</span>
             </div>
             <textarea
 				minLength={3}
@@ -464,11 +464,11 @@ const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({ isOpen, onClose, on
               value={description}
               onChange={handleDescriptionChange}
               rows={4}
-              className="mt-2 block w-full rounded-md border border-gray-300 p-2"
+              className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-emerald-400/60 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
               placeholder="Describe the product or service..."
             />
 			{descriptionError ? (
-              <p className="mt-1 text-xs text-red-600">{descriptionError}</p>
+              <p className="mt-1 text-xs text-red-300">{descriptionError}</p>
             ) : null}
           </div>
 			<div>
@@ -477,23 +477,23 @@ const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({ isOpen, onClose, on
 					Amount Flow
 					</label>
 				</div>
-				<input
-				type="number"
-				min={1}
-				required
-				placeholder="Enter amount flow"
-				value={amountFlow}
-				onChange={(e) => setAmountFlow(Number(e.target.value))}
-				className="mt-2 block w-full rounded-md border border-gray-300 p-2"
-				/>
+			<input
+			type="number"
+			min={1}
+			required
+			placeholder="Enter amount flow"
+			value={amountFlow}
+			onChange={(e) => setAmountFlow(Number(e.target.value))}
+			className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-emerald-400/60 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+			/>
 			</div>
 
           <div>
             <div className="flex items-center justify-between">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-slate-200">
                 Custom Success Message (Optional)
               </label>
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-slate-500">
                 {successWordCount}/{MAX_SUCCESS_MESSAGE_LENGTH} chars
               </span>
             </div>
@@ -503,27 +503,27 @@ const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({ isOpen, onClose, on
 			  maxLength={MAX_SUCCESS_MESSAGE_LENGTH}
               value={successMessage}
               onChange={handleSuccessMessageChange}
-              className="mt-2 block w-full rounded-md border border-gray-300 p-2"
+              className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-emerald-400/60 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
               placeholder="Thank you"
             />
 			{successMessageError ? (
-              <p className="mt-1 text-xs text-red-600">{successMessageError}</p>
+              <p className="mt-1 text-xs text-red-300">{successMessageError}</p>
             ) : null}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-slate-200">
               Payment Link
             </label>
             <div className="mt-2 flex">
-              <span className="flex items-center rounded-l-md border border-r-0 border-gray-300 bg-gray-100 px-3 text-sm text-gray-600">
+              <span className="flex items-center rounded-l-2xl border border-r-0 border-white/10 bg-white/10 px-3 text-sm text-slate-300">
                 {BASE_PAYMENT_PATH}
               </span>
               <input
                 type="text"
                 value={slug}
                 onChange={handleSlugChange}
-                className={`flex-1 rounded-none border p-2 focus:outline-none focus:ring-2 ${slugError ? "border-red-500 focus:border-red-500 focus:ring-red-500/40" : "border-gray-300 focus:border-green-500 focus:ring-green-500/40"}`}
+                className={`flex-1 rounded-none border bg-white/5 px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 ${slugError ? "border-red-500/80 focus:border-red-500/80 focus:ring-red-500/40" : "border-white/10 focus:border-emerald-400/60 focus:ring-emerald-500/30"}`}
                 minLength={MIN_SLUG_LENGTH}
                 maxLength={MAX_SLUG_LENGTH}
                 aria-invalid={Boolean(slugError)}
@@ -533,54 +533,56 @@ const PaymentLinkModal: React.FC<PaymentLinkModalProps> = ({ isOpen, onClose, on
               <button
                 type="button"
                 onClick={handleGenerateSlug}
-                className="rounded-r-md border border-l-0 border-gray-300 px-4 text-gray-600 transition hover:bg-gray-100"
+                className="rounded-r-2xl border border-l-0 border-white/10 bg-white/5 px-4 text-slate-300 transition hover:border-emerald-400/40 hover:text-emerald-200"
                 aria-label="Generate link"
               >
                 <FaSync />
               </button>
             </div>
             {slugError ? (
-              <p className="mt-1 text-xs text-red-600">{slugError}</p>
+              <p className="mt-1 text-xs text-red-300">{slugError}</p>
             ) : null}
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-slate-500">
               Users will be directed to {BASE_PAYMENT_PATH}
               {slug || "<your-link>"}.
             </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-slate-200">
               Redirect Link (Optional)
             </label>
             <input
               type="url"
               value={redirectLink}
               onChange={(event) => setRedirectLink(event.target.value)}
-              className="mt-2 block w-full rounded-md border border-gray-300 p-2"
+              className="mt-2 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:border-emerald-400/60 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
               placeholder="https://example.com/thank-you"
             />
           </div>
 
           {submitError ? (
-            <p className="text-sm text-red-600">{submitError}</p>
+            <p className="text-sm text-red-300">{submitError}</p>
           ) : null}
 
           <div className="flex justify-end gap-3 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="rounded-md border border-gray-300 px-4 py-2 text-gray-700 transition hover:bg-gray-100"
+              className="rounded-2xl border border-white/10 px-4 py-2 text-sm font-semibold text-slate-300 transition hover:border-white/40 hover:bg-white/10"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={Boolean(slugError) || submitting}
-              className={`rounded-md px-4 py-2 font-semibold text-white transition ${
-                slugError || submitting ? "cursor-not-allowed bg-green-300" : "bg-green-500 hover:bg-green-600"
+              className={`rounded-2xl px-5 py-2 text-sm font-semibold transition ${
+                slugError || submitting
+                  ? "cursor-not-allowed bg-emerald-700/40 text-emerald-200/60"
+                  : "bg-gradient-to-r from-emerald-400 via-emerald-500 to-sky-500 text-slate-950 hover:brightness-110"
               }`}
             >
-              {submitting ? "Saving..." : "Save Link"}
+              {submitting ? "Saving…" : "Save link"}
             </button>
           </div>
         </form>

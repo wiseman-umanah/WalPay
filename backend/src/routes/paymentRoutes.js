@@ -24,6 +24,7 @@ registerRoute(
 
     const payment = await createPayment({
       sellerId: seller._id,
+      sellerAddress: body.sellerAddress ? String(body.sellerAddress) : seller.address ?? null,
       name: String(body.name),
       image: body.image || null,
       description: body.description || null,
@@ -37,7 +38,10 @@ registerRoute(
 
     if (body.blockchainTxId) {
       await setPaymentBlockchainTx(payment._id, body.blockchainTxId);
-      await flowService.submitCreatePaymentTx({ txId: body.blockchainTxId, sellerAddress: seller.address });
+      await flowService.submitCreatePaymentTx({
+        txId: body.blockchainTxId,
+        sellerAddress: body.sellerAddress || null,
+      });
       payment.blockchainCreateTx = body.blockchainTxId;
     }
 
@@ -85,11 +89,20 @@ registerRoute(
     if (!payment || payment.sellerId !== seller._id.toString()) {
       throw new HttpError(404, "Payment not found");
     }
-    const txId = body?.txId || null;
-    if (txId) {
-      await flowService.submitDeactivatePaymentTx({ txId, sellerAddress: seller.address });
+    if (!body?.txId) {
+      throw new HttpError(400, "Blockchain transaction id required");
     }
-    const updated = await deactivatePaymentRecord(params.id, txId);
+    if (!body?.walletAddress) {
+      throw new HttpError(400, "Wallet address required");
+    }
+    if (payment.sellerAddress && payment.sellerAddress !== body.walletAddress) {
+      throw new HttpError(403, "Wallet does not match payment owner");
+    }
+    await flowService.submitDeactivatePaymentTx({ txId: body.txId, sellerAddress: body.walletAddress });
+    const updated = await deactivatePaymentRecord(params.id, body.txId);
+    if (!updated) {
+      throw new HttpError(409, "Payment already inactive or missing");
+    }
     sendJson(res, 200, { payment: serializePayment(updated) });
   },
   { requireAuth: true }
