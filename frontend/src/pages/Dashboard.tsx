@@ -20,6 +20,7 @@ import { createPaymentOnChain, deactivatePaymentOnChain, getSellerEarningsOnChai
 import { changePassword } from "../api/profile";
 import { useNavigate } from "react-router-dom";
 import { PiCoinsDuotone, PiArrowBendUpRightDuotone, PiUsersThreeDuotone, PiListDuotone } from "react-icons/pi";
+import { Seo } from "../components/Seo";
 
 const brandGradient = "bg-gradient-to-r from-emerald-400 via-emerald-500 to-sky-500";
 const FLOW_RATE_URL = "https://api.coinbase.com/v2/exchange-rates?currency=FLOW";
@@ -339,7 +340,20 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="relative flex min-h-screen overflow-hidden bg-slate-950 text-slate-100">
+    <>
+      <Seo
+        title="Merchant dashboard"
+        description="Monitor Flow payment performance, sync wallet payouts, and configure WalPay automation from a single dashboard."
+        noIndex
+        keywords={[
+          "Flow merchant dashboard",
+          "payment analytics",
+          "crypto payouts",
+          "WalPay console",
+          "Flow earnings tracker",
+        ]}
+      />
+      <div className="relative flex min-h-screen overflow-hidden bg-slate-950 text-slate-100">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.14),transparent_55%),radial-gradient(circle_at_bottom,_rgba(59,130,246,0.12),transparent_50%)]" />
       <div className="pointer-events-none absolute left-1/2 top-[-18%] h-96 w-96 -translate-x-1/2 rounded-full bg-emerald-500/20 blur-3xl" />
 
@@ -441,7 +455,8 @@ const Dashboard: React.FC = () => {
           {renderSection()}
         </main>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

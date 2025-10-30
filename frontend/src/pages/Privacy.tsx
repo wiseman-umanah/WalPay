@@ -1,8 +1,39 @@
 import { Link } from "react-router-dom";
+import { Seo } from "../components/Seo";
 
 export default function PrivacyPolicy() {
+  const appUrl =
+    import.meta.env.VITE_APP_URL ??
+    (typeof window !== "undefined" ? window.location.origin : "https://walpay.example");
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "WalPay Privacy Policy",
+    url: `${appUrl.replace(/\/$/, "")}/privacy`,
+    description:
+      "WalPay privacy policy describing data collection, usage, and retention practices for Flow payment merchants.",
+    isPartOf: {
+      "@type": "WebSite",
+      url: appUrl,
+      name: "WalPay",
+    },
+  };
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200">
+    <>
+      <Seo
+        title="Privacy Policy"
+        description="Understand how WalPay stores merchant data, handles OTP authentication, and secures Flow wallet interactions."
+        structuredData={structuredData}
+        keywords={[
+          "WalPay privacy",
+          "Flow payment privacy",
+          "crypto data protection",
+          "merchant data policy",
+        ]}
+        canonical={`${appUrl.replace(/\/$/, "")}/privacy`}
+      />
+      <div className="min-h-screen bg-slate-950 text-slate-200">
       <div className="mx-auto max-w-4xl px-6 py-16 space-y-8">
         <header className="space-y-2">
           <p className="text-xs font-semibold uppercase tracking-widest text-emerald-300/80">WalPay</p>
@@ -30,6 +61,7 @@ export default function PrivacyPolicy() {
           <Link to="/" className="text-sm font-semibold text-emerald-300 hover:text-emerald-200">Return to WalPay</Link>
         </footer>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

@@ -3,6 +3,7 @@ import { useFlowCurrentUser } from "@onflow/react-sdk";
 import { useParams } from "react-router-dom";
 import { fetchPublicPayment, type PaymentRecord, recordPaymentTransaction } from "../api/payments";
 import { payOnChain } from "../flow/walpay";
+import { Seo } from "../components/Seo";
 
 type PaymentItem = {
   recordId: string;
@@ -15,6 +16,7 @@ type PaymentItem = {
   totalFlow: number;
   successMessage?: string | null;
   redirectUrl?: string | null;
+  priceUsd?: number | null;
 };
 
 export default function PublicPaymentPage() {
@@ -68,6 +70,42 @@ export default function PublicPaymentPage() {
       totalFlow: round4(item.totalFlow),
     };
   }, [item]);
+  const appUrl =
+    import.meta.env.VITE_APP_URL ??
+    (typeof window !== "undefined" ? window.location.origin : "https://walpay.example");
+  const canonicalUrl = useMemo(
+    () => `${appUrl.replace(/\/$/, "")}/payment/${slug ?? ""}`,
+    [appUrl, slug]
+  );
+  const structuredData = useMemo(() => {
+    if (!item) return null;
+    const canonical = `${appUrl.replace(/\/$/, "")}/payment/${slug ?? item.id}`;
+    const priceCurrency = item.priceUsd != null ? "USD" : "FLOW";
+    const priceValue =
+      item.priceUsd != null ? item.priceUsd.toFixed(2) : totalFlow.toString();
+    return {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: item.name,
+      description: item.description ?? "Flow payment link powered by WalPay.",
+      image: item.imageUrl ? [item.imageUrl] : undefined,
+      offers: {
+        "@type": "Offer",
+        priceCurrency,
+        price: priceValue,
+        url: canonical,
+        availability: "https://schema.org/InStock",
+        acceptedPaymentMethod: {
+          "@type": "PaymentMethod",
+          name: "FLOW",
+        },
+      },
+      brand: {
+        "@type": "Organization",
+        name: "WalPay Merchant",
+      },
+    };
+  }, [item, appUrl, slug, totalFlow]);
 
   const connectWallet = async () => {
     await authenticate();
@@ -101,36 +139,69 @@ export default function PublicPaymentPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-400">
-        <div className="flex min-h-screen items-center justify-center">
-          <div className="flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-6 py-3">
-            <span className="h-3 w-3 animate-pulse rounded-full bg-emerald-400" />
-            Loading checkout…
+      <>
+        <Seo
+          title="Preparing checkout"
+          description="Loading Flow-native checkout details. WalPay verifies payment data before rendering the link."
+          noIndex
+          canonical={canonicalUrl}
+        />
+        <div className="min-h-screen bg-slate-950 text-slate-400">
+          <div className="flex min-h-screen items-center justify-center">
+            <div className="flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-6 py-3">
+              <span className="h-3 w-3 animate-pulse rounded-full bg-emerald-400" />
+              Loading checkout…
+            </div>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (error || !item) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-400">
-        <div className="flex min-h-screen items-center justify-center">
-          <div className="max-w-md rounded-3xl border border-red-400/40 bg-red-500/10 px-8 py-6 text-center text-sm text-red-100">
-            {error ?? "Payment not available."}
+      <>
+        <Seo
+          title="Payment unavailable"
+          description={error ?? "This WalPay link is inactive or cannot be found."}
+          canonical={canonicalUrl}
+        />
+        <div className="min-h-screen bg-slate-950 text-slate-400">
+          <div className="flex min-h-screen items-center justify-center">
+            <div className="max-w-md rounded-3xl border border-red-400/40 bg-red-500/10 px-8 py-6 text-center text-sm text-red-100">
+              {error ?? "Payment not available."}
+            </div>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-slate-950 text-slate-100">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.18),transparent_55%),radial-gradient(circle_at_bottom,_rgba(59,130,246,0.16),transparent_50%)]" />
-      <div className="pointer-events-none absolute left-1/2 top-[-18%] h-80 w-80 -translate-x-1/2 rounded-full bg-emerald-500/20 blur-3xl" />
-      <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-16">
-        <div className="w-full max-w-4xl rounded-[40px] border border-white/10 bg-white/5 p-8 shadow-[0_50px_120px_-50px_rgba(16,185,129,0.6)] backdrop-blur-xl sm:p-12">
-          <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/5 pb-6">
+    <>
+      <Seo
+        title={item.name}
+        description={
+          item.description
+            ? item.description
+            : `Complete a secure Flow payment for ${item.name} using WalPay checkout.`
+        }
+        image={item.imageUrl ?? null}
+        canonical={canonicalUrl}
+        structuredData={structuredData ?? undefined}
+        keywords={[
+          `${item.name} Flow payment`,
+          "WalPay checkout",
+          "Flow crypto payment",
+          "digital goods payment link",
+        ]}
+      />
+      <div className="relative min-h-screen overflow-hidden bg-slate-950 text-slate-100">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.18),transparent_55%),radial-gradient(circle_at_bottom,_rgba(59,130,246,0.16),transparent_50%)]" />
+        <div className="pointer-events-none absolute left-1/2 top-[-18%] h-80 w-80 -translate-x-1/2 rounded-full bg-emerald-500/20 blur-3xl" />
+        <div className="relative z-10 flex min-h-screen items-center justify-center px-4 py-16">
+          <div className="w-full max-w-4xl rounded-[40px] border border-white/10 bg-white/5 p-8 shadow-[0_50px_120px_-50px_rgba(16,185,129,0.6)] backdrop-blur-xl sm:p-12">
+            <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/5 pb-6">
             <div>
               <p className="text-xs font-semibold uppercase tracking-widest text-emerald-300/80">WalPay Checkout</p>
               <h1 className="text-2xl font-semibold text-white">Secure Flow payment</h1>
@@ -245,8 +316,9 @@ export default function PublicPaymentPage() {
             </div>
           </main>
         </div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -275,5 +347,6 @@ function mapPayment(payment: PaymentRecord): PaymentItem {
     imageUrl: payment.image,
     successMessage: payment.customSuccessMessage,
     redirectUrl: payment.redirectUrl,
+    priceUsd: payment.priceUSD ?? null,
   };
 }

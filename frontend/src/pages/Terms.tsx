@@ -1,13 +1,39 @@
 import { Link } from "react-router-dom";
+import { Seo } from "../components/Seo";
 
 export default function TermsOfService() {
+  const appUrl =
+    import.meta.env.VITE_APP_URL ??
+    (typeof window !== "undefined" ? window.location.origin : "https://walpay.example");
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: "WalPay Terms of Service",
+    url: `${appUrl.replace(/\/$/, "")}/terms`,
+    description:
+      "Terms of Service outlining acceptable use, responsibilities, and liabilities for the WalPay Flow payment platform.",
+    isPartOf: {
+      "@type": "WebSite",
+      url: appUrl,
+      name: "WalPay",
+    },
+  };
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200">
-      <div className="mx-auto max-w-4xl px-6 py-16 space-y-8">
-        <header className="space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-widest text-emerald-300/80">WalPay</p>
-          <h1 className="text-3xl font-semibold text-white">Terms of Service</h1>
-          <p className="text-sm text-slate-400">Last updated: October 2025</p>
+    <>
+      <Seo
+        title="Terms of Service"
+        description="Review WalPay's Terms of Service to understand acceptable use, merchant responsibilities, and platform safeguards."
+        structuredData={structuredData}
+        keywords={["WalPay terms", "Flow payment terms", "crypto payment compliance", "merchant responsibilities"]}
+        canonical={`${appUrl.replace(/\/$/, "")}/terms`}
+      />
+      <div className="min-h-screen bg-slate-950 text-slate-200">
+        <div className="mx-auto max-w-4xl px-6 py-16 space-y-8">
+          <header className="space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-widest text-emerald-300/80">WalPay</p>
+            <h1 className="text-3xl font-semibold text-white">Terms of Service</h1>
+            <p className="text-sm text-slate-400">Last updated: October 2025</p>
         </header>
 
         <section className="space-y-6 text-sm leading-relaxed text-slate-300">
@@ -31,6 +57,7 @@ export default function TermsOfService() {
           <Link to="/" className="text-sm font-semibold text-emerald-300 hover:text-emerald-200">Return to WalPay</Link>
         </footer>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

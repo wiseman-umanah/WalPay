@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { HiOutlineShieldCheck, HiSparkles, HiOutlineCurrencyDollar } from "react-icons/hi2";
 import { FiArrowLeft } from "react-icons/fi";
+import { Seo } from "../components/Seo";
 
 const heroFeatures = [
   {
@@ -398,9 +399,49 @@ export default function RegistrationForm() {
 
   const showAuthSwitch = view === "signup" || view === "login";
   const backTarget = backMap[view];
+  const appUrl =
+    import.meta.env.VITE_APP_URL ??
+    (typeof window !== "undefined" ? window.location.origin : "https://walpay.example");
+  const structuredData = useMemo(
+    () => [
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: "WalPay",
+        url: appUrl,
+        logo: `${appUrl.replace(/\/$/, "")}/logo.png`,
+        sameAs: ["https://x.com/flow_blockchain"],
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: "WalPay",
+        url: appUrl,
+        potentialAction: {
+          "@type": "SearchAction",
+          target: `${appUrl.replace(/\/$/, "")}/payment/{slug}`,
+          "query-input": "required name=slug",
+        },
+      },
+    ],
+    [appUrl]
+  );
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
+    <>
+      <Seo
+        title="Launch Flow payment links in minutes"
+        description="Create branded Flow payment links, automate platform fees, and reconcile wallet activity from a single merchant console."
+        structuredData={structuredData}
+        keywords={[
+          "Flow payment links",
+          "crypto payments platform",
+          "merchant dashboard",
+          "Flow blockchain checkout",
+          "WalPay onboarding",
+        ]}
+      />
+      <div className="relative min-h-screen overflow-hidden">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.12),transparent_55%),radial-gradient(circle_at_bottom,_rgba(59,130,246,0.12),transparent_55%)]" />
       <div className="pointer-events-none absolute top-[-18%] left-[12%] h-80 w-80 rounded-full bg-emerald-500/20 blur-3xl" />
       <div className="pointer-events-none absolute bottom-[-20%] right-[10%] h-96 w-96 rounded-full bg-sky-500/15 blur-3xl" />
@@ -507,6 +548,7 @@ export default function RegistrationForm() {
         </section>
       </div>
     </div>
+    </>
   );
 }
 
