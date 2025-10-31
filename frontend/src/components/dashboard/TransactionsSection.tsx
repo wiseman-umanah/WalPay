@@ -2,8 +2,8 @@ import { PiArrowSquareOutDuotone } from "react-icons/pi";
 import type { TransactionRecord } from "../../api/payments";
 
 const flowscanBaseUrl = (import.meta.env.VITE_FLOW_NETWORK ?? "testnet") === "mainnet"
-  ? "https://flowscan.org/transaction/"
-  : "https://testnet.flowscan.org/transaction/";
+  ? "https://flowscan.io/tx/"
+  : "https://testnet.flowscan.io/tx/";
 
 const shortAddress = (address?: string | null) =>
   !address ? "—" : `${address.slice(0, 6)}…${address.slice(-4)}`;
