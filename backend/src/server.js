@@ -4,9 +4,25 @@ import { connectToDatabase } from "./db.js";
 import { appConfig, validateConfig } from "./config.js";
 import { logger } from "./utils/logger.js";
 
+let didValidate = false;
+let connectPromise;
+
+async function ensureAppReady() {
+  if (!didValidate) {
+    validateConfig();
+    didValidate = true;
+  }
+  if (!connectPromise) {
+    connectPromise = connectToDatabase().catch((err) => {
+      connectPromise = undefined;
+      throw err;
+    });
+  }
+  return connectPromise;
+}
+
 export async function startServer() {
-  validateConfig();
-  await connectToDatabase();
+  await ensureAppReady();
   const server = createServer((req, res) => {
     appHandler(req, res);
   });
@@ -16,3 +32,14 @@ export async function startServer() {
   return server;
 }
 
+export default async function handler(req, res) {
+  try {
+    await ensureAppReady();
+  } catch (err) {
+    logger.error("Failed to initialize serverless handler", err);
+    res.statusCode = 500;
+    res.end("Internal Server Error");
+    return;
+  }
+  return appHandler(req, res);
+}
