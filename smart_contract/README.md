@@ -99,3 +99,12 @@ flow scripts execute cadence/scripts/get_seller_earnings.cdc \
 - [Flow documentation](https://developers.flow.com/)
 - [Cadence language reference](https://cadence-lang.org/docs/language)
 - [WalPay architecture overview](../docs/architecture.md)
+
+
+Contract Details
+- Name: WalPay
+- Address (Deployed to): 0x7bcb95a415452d7d
+- Identifier: A.7bcb95a415452d7d.WalPay
+- TxHash - 84da5745b2d375bcd7ffe61d65d3df4915ec1b4cd20951984ec3ea20063a67cb
+
+- Link to contract deployed: https://testnet.flowscan.io/contract/A.7bcb95a415452d7d.WalPay
