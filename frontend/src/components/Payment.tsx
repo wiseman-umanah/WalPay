@@ -88,16 +88,16 @@ export function Payment({
 
       <div className="rounded-3xl border border-white/10 bg-white/5">
         <div className="overflow-x-auto">
-          <table className="min-w-[960px] w-full divide-y divide-white/5 text-sm text-slate-300">
+          <table className="w-full divide-y divide-white/5 text-sm text-slate-300">
             <thead className="bg-white/5 text-xs uppercase tracking-wider text-slate-400">
               <tr>
-                <th className="px-6 py-4 text-left">Link</th>
-                <th className="px-6 py-4 text-left">Flow amount</th>
-                <th className="px-6 py-4 text-left">Fiat (USD)</th>
-                <th className="px-6 py-4 text-left">Total Flow</th>
-                <th className="px-6 py-4 text-left">Created</th>
-                <th className="px-6 py-4 text-left">Actions</th>
-                <th className="px-6 py-4 text-left">Status</th>
+                <th className="whitespace-nowrap px-6 py-4 text-left">Link</th>
+                <th className="whitespace-nowrap px-6 py-4 text-left">Flow amount</th>
+                <th className="whitespace-nowrap px-6 py-4 text-left">Fiat (USD)</th>
+                <th className="whitespace-nowrap px-6 py-4 text-left">Total Flow</th>
+                <th className="whitespace-nowrap px-6 py-4 text-left">Created</th>
+                <th className="whitespace-nowrap px-6 py-4 text-left">Actions</th>
+                <th className="whitespace-nowrap px-6 py-4 text-left">Status</th>
               </tr>
             </thead>
             <tbody>

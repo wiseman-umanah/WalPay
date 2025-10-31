@@ -38,15 +38,15 @@ export default function TransactionsSection({ transactions, loading, error, onRe
         </div>
       ) : null}
 
-      <div className="mt-6 overflow-hidden rounded-3xl border border-white/10">
-        <table className="min-w-full divide-y divide-white/10 text-sm text-slate-300">
+      <div className="mt-6 overflow-hidden overflow-x-auto rounded-3xl border border-white/10">
+        <table className="w-full divide-y divide-white/10 text-sm text-slate-300">
           <thead className="bg-white/5 text-xs uppercase tracking-wider text-slate-400">
             <tr>
-              <th className="px-6 py-4 text-left">Payment link</th>
-              <th className="px-6 py-4 text-left">Transaction</th>
-              <th className="px-6 py-4 text-left">Kind</th>
-              <th className="px-6 py-4 text-left">Payer wallet</th>
-              <th className="px-6 py-4 text-left">Timestamp</th>
+              <th className="whitespace-nowrap px-6 py-4 text-left">Payment link</th>
+              <th className="whitespace-nowrap px-6 py-4 text-left">Transaction</th>
+              <th className="whitespace-nowrap px-6 py-4 text-left">Kind</th>
+              <th className="whitespace-nowrap px-6 py-4 text-left">Payer wallet</th>
+              <th className="whitespace-nowrap px-6 py-4 text-left">Timestamp</th>
             </tr>
           </thead>
           <tbody>

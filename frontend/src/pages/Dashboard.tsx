@@ -353,9 +353,9 @@ const Dashboard: React.FC = () => {
           "Flow earnings tracker",
         ]}
       />
-      <div className="relative flex min-h-screen overflow-hidden bg-slate-950 text-slate-100">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.14),transparent_55%),radial-gradient(circle_at_bottom,_rgba(59,130,246,0.12),transparent_50%)]" />
-      <div className="pointer-events-none absolute left-1/2 top-[-18%] h-96 w-96 -translate-x-1/2 rounded-full bg-emerald-500/20 blur-3xl" />
+      <div className="relative flex min-h-screen bg-slate-950 text-slate-100">
+      <div className="pointer-events-none fixed inset-0 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.14),transparent_55%),radial-gradient(circle_at_bottom,_rgba(59,130,246,0.12),transparent_50%)]" />
+      <div className="pointer-events-none fixed left-1/2 top-[-18%] h-96 w-96 -translate-x-1/2 rounded-full bg-emerald-500/20 blur-3xl" />
 
       <button
         type="button"
@@ -381,7 +381,7 @@ const Dashboard: React.FC = () => {
         </>
       ) : null}
 
-      <div className="relative z-10 flex min-h-screen flex-1 flex-col">
+      <div className="relative z-10 flex min-h-screen flex-1 flex-col overflow-auto">
         <header className="px-4 pt-14 sm:px-8 lg:pt-12">
           <div className="flex flex-wrap items-center justify-between gap-6">
             <div className="space-y-2">
@@ -420,7 +420,7 @@ const Dashboard: React.FC = () => {
           </div>
         </header>
 
-        <main className="flex-1 space-y-8 px-4 pb-16 pt-6 sm:px-8">
+        <main className="flex-1 space-y-8 px-4 pb-16 pt-6 sm:px-8 overflow-x-hidden">
           <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {statCards.map(({ title, value, helper, icon: Icon }) => (
               <article
