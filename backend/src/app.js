@@ -1,5 +1,6 @@
 import { handleRequest } from "./router.js";
 import { resolveAuthContext } from "./middleware/auth.js";
+import "./routes/rootRoute.js";
 import "./routes/authRoutes.js";
 import "./routes/paymentRoutes.js";
 import "./routes/profileRoutes.js";
