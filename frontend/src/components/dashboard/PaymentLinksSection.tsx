@@ -37,7 +37,7 @@ export default function PaymentLinksSection({
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-semibold text-white">Payment links</h2>
-          <p className="text-sm text-slate-400">Create and manage Flow payment links with built-in fee routing.</p>
+          <p className="text-sm text-slate-400">Create and manage Flow payment links. (2% platform fee)</p>
         </div>
       </div>
       <div className="mt-6">

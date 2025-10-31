@@ -5,11 +5,12 @@ import {
   PiUserCircleDuotone,
   PiSlidersDuotone,
 } from "react-icons/pi";
+import { MdOutlineKey } from "react-icons/md";
 import { useFlowCurrentUser } from "@onflow/react-sdk";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-export type SidebarSection = "payment" | "transactions" | "settings" | "profile";
+export type SidebarSection = "payment" | "transactions" | "settings" | "profile" | "api";
 
 interface SidebarProps {
   active: SidebarSection;
@@ -23,6 +24,7 @@ const navItems: { key: SidebarSection; label: string; icon: React.ComponentType<
   { key: "transactions", label: "Transactions", icon: PiReceiptDuotone },
   { key: "profile", label: "Profile", icon: PiUserCircleDuotone },
   { key: "settings", label: "Settings", icon: PiSlidersDuotone },
+  { key: "api", label: "API", icon: MdOutlineKey },
 ];
 
 export default function Sidebar({ active, onSelect, onClose, mobile = false }: SidebarProps) {

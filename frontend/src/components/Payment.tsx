@@ -122,7 +122,7 @@ export function Payment({
                         <span className="text-xs text-slate-500">{link.paymentLink}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-5 text-white">{Number(link.priceFlow).toFixed(4)} FLOW</td>
+                    <td className="px-6 py-5 text-white">{Number(link.priceFlow).toFixed(2)}</td>
                     <td className="px-6 py-5">
                       {rateLoading
                         ? "Loading…"
@@ -132,7 +132,7 @@ export function Payment({
                             ? `$${Number(link.priceUSD).toFixed(2)}`
                             : "—"}
                     </td>
-                    <td className="px-6 py-5 text-white">{Number(link.totalFlow).toFixed(4)} FLOW</td>
+                    <td className="px-6 py-5 text-white">{Number(link.totalFlow).toFixed(2)}</td>
                     <td className="px-6 py-5 text-slate-400">
                       {new Date(link.createdAt).toLocaleString()}
                     </td>

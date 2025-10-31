@@ -229,11 +229,11 @@ export default function PublicPaymentPage() {
             <div className="flex flex-col gap-10 lg:flex-row">
               {item.imageUrl && imageVisible && (
                 <div className="w-full rounded-3xl border border-white/10 bg-white/5 p-2 lg:w-1/2">
-                  <div className="aspect-[4/3] w-full overflow-hidden rounded-[26px] border border-white/10 bg-black/40">
+                  <div className="aspect-[4/3] w-full h-full overflow-hidden">
                     <img
                       src={item.imageUrl}
                       alt={item.name}
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-contain"
                       onError={() => setImageVisible(false)}
                     />
                   </div>

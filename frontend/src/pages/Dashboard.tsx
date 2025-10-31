@@ -5,6 +5,7 @@ import {
   TransactionsSection,
   ProfileSection,
   SettingsSection,
+  ApiSection,
 } from "../components/dashboard";
 import { useFlowCurrentUser } from "@onflow/react-sdk";
 import { useAuth } from "../context/AuthContext";
@@ -334,6 +335,8 @@ const Dashboard: React.FC = () => {
             onChangePassword={changePassword}
           />
         );
+      case "api":
+        return <ApiSection />;
       default:
         return <SettingsSection />;
     }

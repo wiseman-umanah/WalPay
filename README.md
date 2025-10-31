@@ -1,10 +1,10 @@
 ![front_page](image.png)
 
-# WalPay
+# WalP
 
-WalPay is an end-to-end Flow blockchain payment-link platform. It lets on-chain sellers create branded checkout links, route fees to the WalPay treasury, and reconcile earnings across web, backend, and Cadence smart-contract layers.
+WalP is an end-to-end Flow blockchain payment-link platform. It lets on-chain sellers create branded checkout links, route fees to the WalP treasury, and reconcile earnings across web, backend, and Cadence smart-contract layers.
 
-> **Use case:** A merchant without a storefront can spin up a WalPay link, share it with a buyer, collect FLOW with a platform fee, and monitor payouts in a single dashboard. The Flow smart contract guarantees that fees and seller earnings are settled atomically while the backend keeps fiat equivalents, images, and email notifications in sync.
+> **Use case:** A merchant without a storefront can spin up a WalP link, share it with a buyer, collect FLOW with a platform fee, and monitor payouts in a single dashboard. The Flow smart contract guarantees that fees and seller earnings are settled atomically while the backend keeps fiat equivalents, images, and email notifications in sync.
 
 ## Contents
 - [Why it matters](#why-it-matters)
